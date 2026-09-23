@@ -11,34 +11,108 @@
 
 <body>
 
-  <header>
+  <header class="hero">
+    <div class="day-badge" id="dayBadge">DAY 1</div>
+
     <h1>Ronjita English Coach</h1>
-    <p>Learn English. Speak English. Be Confident.</p>
+
+    <p>Learn English. Speak English. Build Confidence.</p>
+
+    <div class="progress-box">
+      <span id="progressText">Your English journey starts today! 🌱</span>
+    </div>
   </header>
+
 
   <main>
 
-    <section class="welcome">
-      <h2>Welcome! 👋</h2>
+    <!-- DAILY LESSON -->
 
-      <p>
-        Practice English speaking with your AI English Coach.
-      </p>
+    <section class="card daily-card">
 
-      <button id="startButton">
-        Start Speaking 🎤
-      </button>
+      <div class="section-title">
+        <span>📅</span>
+        <div>
+          <h2 id="dayTitle">Day 1</h2>
+          <p>Today's English Practice</p>
+        </div>
+      </div>
+
+      <div class="daily-message">
+        <h3>Welcome to your English journey! 👋</h3>
+
+        <p>
+          Practice a little every day and become more confident
+          in English.
+        </p>
+      </div>
+
     </section>
 
 
-    <section class="chat-box">
+    <!-- VOCABULARY -->
 
-      <h2>English Practice</h2>
+    <section class="card">
 
-      <div id="chat">
-        <p class="ai-message">
-          AI Coach: Hello! Let's practice English together.
-        </p>
+      <div class="section-heading">
+        <h2>📚 Today's Vocabulary</h2>
+
+        <span class="small-label">
+          New words every day
+        </span>
+      </div>
+
+      <div id="vocabularyList"></div>
+
+    </section>
+
+
+    <!-- SENTENCE BUILDER -->
+
+    <section class="card sentence-card">
+
+      <h2>✍️ Make Your Own Sentence</h2>
+
+      <p class="instruction">
+        Use today's vocabulary word and make your own English sentence.
+      </p>
+
+      <div class="selected-word">
+        Word:
+        <strong id="selectedWord">Select a vocabulary word</strong>
+      </div>
+
+      <textarea
+        id="sentenceInput"
+        placeholder="Example: I want to improve my English every day."
+      ></textarea>
+
+      <button id="checkSentenceButton" class="primary-button">
+        Check My Sentence ✓
+      </button>
+
+      <div id="sentenceResult"></div>
+
+    </section>
+
+
+    <!-- TEXT PRACTICE -->
+
+    <section class="card">
+
+      <h2>💬 English Conversation</h2>
+
+      <p class="instruction">
+        Type an English sentence and practice with your coach.
+      </p>
+
+      <div id="chat" class="chat-box">
+
+        <div class="coach-message">
+          <strong>AI Coach:</strong>
+          Hello! How are you today? 😊
+        </div>
+
       </div>
 
       <div class="input-area">
@@ -49,7 +123,7 @@
           placeholder="Type your English sentence..."
         >
 
-        <button id="sendButton">
+        <button id="sendButton" class="send-button">
           Send
         </button>
 
@@ -58,19 +132,111 @@
     </section>
 
 
-    <!-- Creator Information -->
+    <!-- SPEAKING -->
 
-    <section class="creator">
+    <section class="card speaking-card">
+
+      <h2>🎤 Speaking Practice</h2>
+
+      <p class="instruction">
+        Press the microphone and speak in English.
+      </p>
+
+      <button id="startSpeakingButton" class="mic-button">
+        🎤 Start Speaking
+      </button>
+
+      <div id="speakingStatus" class="speaking-status">
+        Press the button and start speaking.
+      </div>
+
+      <div class="speech-result">
+
+        <h3>What you said:</h3>
+
+        <p id="speechText">
+          Your spoken English will appear here.
+        </p>
+
+      </div>
+
+      <button id="speakSentenceButton" class="secondary-button">
+        🔊 Listen
+      </button>
+
+    </section>
+
+
+    <!-- DAILY GOAL -->
+
+    <section class="card goal-card">
+
+      <h2>🎯 Today's Goal</h2>
+
+      <div class="goal-item">
+        <span id="goalVocabulary">☐ Learn today's vocabulary</span>
+      </div>
+
+      <div class="goal-item">
+        <span id="goalSentence">☐ Make a sentence</span>
+      </div>
+
+      <div class="goal-item">
+        <span id="goalSpeaking">☐ Practice speaking</span>
+      </div>
+
+      <button id="completeDayButton" class="complete-button">
+        Complete Day <span id="completeDayNumber">1</span> ✓
+      </button>
+
+      <div id="completionMessage"></div>
+
+    </section>
+
+
+    <!-- PROGRESS -->
+
+    <section class="card progress-card">
+
+      <h2>📈 My English Journey</h2>
+
+      <div class="stats">
+
+        <div class="stat">
+          <strong id="currentDayStat">1</strong>
+          <span>Current Day</span>
+        </div>
+
+        <div class="stat">
+          <strong id="completedDaysStat">0</strong>
+          <span>Days Completed</span>
+        </div>
+
+        <div class="stat">
+          <strong id="vocabularyCountStat">5</strong>
+          <span>Today's Words</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CREATOR -->
+
+    <section class="card creator">
 
       <h2>About the Creator</h2>
 
-      <p><strong>Created by:</strong> Mst.Ranjita Akter Runa</p>
+      <p>
+        <strong>Created by:</strong>
+        Ranjita
+      </p>
 
-      <p><strong>Father:</strong> রবিউল ইসলাম</p>
-
-      <p><strong>Mother:</strong> Mst.Laky </p>
-
-      <p><strong>Project:</strong> Ronjita English Coach</p>
+      <p>
+        <strong>Project:</strong>
+        Ronjita English Coach
+      </p>
 
     </section>
 
@@ -78,12 +244,17 @@
 
 
   <footer>
+
     <p>© 2026 Ronjita English Coach</p>
-    <p>Created with ❤️ by Ranjita</p>
+
+    <p>
+      Created with ❤️ by Ranjita
+    </p>
+
   </footer>
 
 
   <script src="script.js"></script>
 
 </body>
-      </html>
+  </html>
