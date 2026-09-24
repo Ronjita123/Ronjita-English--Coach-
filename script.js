@@ -1,876 +1,373 @@
-// =====================================================
-// RANJITA'S AI ENGLISH COACH
-// Secure Gemini API via Cloudflare Worker
-// =====================================================
+const speakBtn =
+  document.getElementById("speakBtn");
 
+const sendBtn =
+  document.getElementById("sendBtn");
 
-// =====================================================
-// 1. CLOUDFLARE WORKER URL
-// =====================================================
-//
-// Cloudflare Worker তৈরি করার পরে এখানে Worker URL বসাবে.
-//
-// Example:
-// const AI_API_URL = "https://ronjita-english-ai.username.workers.dev";
-//
+const userText =
+  document.getElementById("userText");
 
-const AI_API_URL = "https://still-scene-e8cf.mstronjitaakter.workers.dev";
+const status =
+  document.getElementById("status");
 
-// =====================================================
-// 2. DAILY SCORE
-// =====================================================
+const aiReply =
+  document.getElementById("aiReply");
 
-let dailyScore =
-  Number(localStorage.getItem("daily_score")) || 0;
+const correction =
+  document.getElementById("correction");
 
-document.getElementById("daily-score").innerText =
-  dailyScore;
+const question =
+  document.getElementById("question");
 
+const conversationCount =
+  document.getElementById("conversationCount");
 
-function increaseScore(points) {
+const correctionCount =
+  document.getElementById("correctionCount");
 
-  dailyScore += points;
 
-  localStorage.setItem(
-    "daily_score",
-    dailyScore
-  );
+// ==========================================
+// CLOUDFLARE WORKER URL
+// ==========================================
 
-  document.getElementById("daily-score").innerText =
-    dailyScore;
-}
+const AI_API_URL =
+  "https://still-scene-e8cf.mstronjitaakter.workers.dev";
 
 
-// =====================================================
-// 3. CHECK AI CONNECTION
-// =====================================================
+let conversations = 0;
+let corrections = 0;
 
-async function checkAIConnection() {
 
-  const status =
-    document.getElementById("ai-status");
-
-  if (
-    !AI_API_URL ||
-    AI_API_URL === "PASTE_YOUR_WORKER_URL_HERE"
-  ) {
-
-    status.innerText =
-      "⚠️ AI Worker URL এখনো সেট করা হয়নি।";
-
-    return;
-
-  }
-
-  status.innerText =
-    "🔄 Connecting to AI...";
-
-  try {
-
-    const response =
-      await fetch(AI_API_URL, {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          action: "health",
-          message: "Hello"
-        })
-
-      });
-
-
-    const data =
-      await response.json();
-
-
-    if (response.ok && data.success) {
-
-      status.innerText =
-        "🟢 AI Coach is ready!";
-
-    } else {
-
-      status.innerText =
-        "🔴 AI connection problem.";
-
-    }
-
-  } catch (error) {
-
-    status.innerText =
-      "🔴 Cannot connect to AI Worker.";
-
-  }
-}
-
-
-// =====================================================
-// 4. VOCABULARY
-// =====================================================
-
-const vocabSets = [
-
-  [
-    {
-      word: "Improve",
-      pronounce: "ইমপ্রুভ",
-      meaning: "উন্নতি করা"
-    },
-    {
-      word: "Fluency",
-      pronounce: "ফ্লুয়েন্সি",
-      meaning: "সাবলীলতা"
-    }
-  ],
-
-  [
-    {
-      word: "Achieve",
-      pronounce: "অ্যাচিভ",
-      meaning: "অর্জন করা"
-    },
-    {
-      word: "Confident",
-      pronounce: "কনফিডেন্ট",
-      meaning: "আত্মবিশ্বাসী"
-    }
-  ],
-
-  [
-    {
-      word: "Practice",
-      pronounce: "প্র্যাকটিস",
-      meaning: "অনুশীলন"
-    },
-    {
-      word: "Vocabulary",
-      pronounce: "ভোকাভিউলারি",
-      meaning: "শব্দভান্ডার"
-    }
-  ]
-
-];
-
-
-const todayVocabs =
-  vocabSets[
-    new Date().getDate() % vocabSets.length
-  ];
-
-
-document.getElementById(
-  "vocab-container"
-).innerHTML = todayVocabs.map(v => `
-
-  <div class="vocab-card">
-
-    <span class="vocab-word">
-      ${v.word}
-    </span>
-
-    <span class="vocab-pronounce">
-      (${v.pronounce})
-    </span>
-
-    -
-
-    <span>
-      ${v.meaning}
-    </span>
-
-  </div>
-
-`).join("");
-
-
-// =====================================================
-// 5. SECURE AI REQUEST FUNCTION
-// =====================================================
-
-async function askAI(prompt) {
-
-  if (
-    !AI_API_URL ||
-    AI_API_URL === "PASTE_YOUR_WORKER_URL_HERE"
-  ) {
-
-    throw new Error(
-      "AI Worker URL is not configured."
-    );
-
-  }
-
-
-  const response =
-    await fetch(AI_API_URL, {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify({
-
-        action: "generate",
-
-        message: prompt
-
-      })
-
-    });
-
-
-  let data;
-
-  try {
-
-    data = await response.json();
-
-  } catch {
-
-    throw new Error(
-      "Invalid response from AI server."
-    );
-
-  }
-
-
-  if (!response.ok || !data.success) {
-
-    throw new Error(
-      data.error ||
-      "AI request failed."
-    );
-
-  }
-
-
-  return data.text;
-
-}
-
-
-// =====================================================
-// 6. SENTENCE CHECKER
-// =====================================================
-
-async function checkSentence() {
-
-  const input =
-    document
-      .getElementById("user-sentence")
-      .value
-      .trim();
-
-
-  const feedback =
-    document.getElementById(
-      "sentence-feedback"
-    );
-
-
-  const grammar =
-    document.getElementById(
-      "feedback-grammar"
-    );
-
-
-  const bangla =
-    document.getElementById(
-      "feedback-bangla"
-    );
-
-
-  if (!input) {
-
-    alert(
-      "Write a sentence first!"
-    );
-
-    return;
-
-  }
-
-
-  feedback.classList.remove(
-    "hidden"
-  );
-
-
-  grammar.innerText =
-    "🤖 AI is checking your sentence...";
-
-
-  bangla.innerText = "";
-
-
-  const prompt = `
-
-You are a friendly English teacher.
-
-Student sentence:
-"${input}"
-
-Do these tasks:
-
-1. Check the grammar.
-2. If incorrect, show the corrected sentence.
-3. Explain the mistake simply.
-4. Give the Bangla translation.
-5. Keep the answer short and beginner-friendly.
-
-Use exactly this format:
-
-GRAMMAR:
-...
-
-CORRECT:
-...
-
-EXPLANATION:
-...
-
-BANGLA:
-...
-
-`;
-
-
-  try {
-
-    const reply =
-      await askAI(prompt);
-
-
-    const banglaMatch =
-      reply.match(
-        /BANGLA:\\s*([\\s\\S]*)/i
-      );
-
-
-    if (banglaMatch) {
-
-      bangla.innerText =
-        banglaMatch[1].trim();
-
-      grammar.innerText =
-        reply
-          .replace(
-            banglaMatch[0],
-            ""
-          )
-          .trim();
-
-    } else {
-
-      grammar.innerText =
-        reply;
-
-    }
-
-
-    feedback.className =
-      "feedback-box success";
-
-
-    increaseScore(1);
-
-
-  } catch (error) {
-
-    grammar.innerText =
-      "❌ AI Error: " +
-      error.message;
-
-    bangla.innerText = "";
-
-  }
-
-}
-
-
-// =====================================================
-// 7. SPEECH RECOGNITION
-// =====================================================
+// ==========================================
+// SPEECH RECOGNITION
+// ==========================================
 
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
 
-
-let recognition = null;
-
+let recognition;
 
 if (SpeechRecognition) {
 
-  recognition =
-    new SpeechRecognition();
+  recognition = new SpeechRecognition();
 
-  recognition.lang =
-    "en-US";
+  recognition.lang = "en-US";
 
-  recognition.interimResults =
-    false;
+  recognition.interimResults = false;
 
-  recognition.continuous =
-    false;
+  recognition.continuous = false;
 
 
   recognition.onstart = function () {
 
-    document.getElementById(
-      "mic-btn"
-    ).innerText =
-      "🎙️ Listening... Speak now";
-
-
-    document.getElementById(
-      "mic-btn"
-    ).disabled = true;
+    status.innerText =
+      "🎤 Listening... Speak now.";
 
   };
 
 
-  recognition.onend = function () {
+  recognition.onresult =
+    function (event) {
 
-    document.getElementById(
-      "mic-btn"
-    ).innerText =
-      "🎤 Start Speaking";
+      const text =
+        event.results[0][0].transcript;
 
+      userText.value = text;
 
-    document.getElementById(
-      "mic-btn"
-    ).disabled = false;
+      status.innerText =
+        "✅ I heard you!";
 
-  };
+    };
 
 
   recognition.onerror =
-    function(event) {
+    function (event) {
 
-      document.getElementById(
-        "speech-result"
-      ).innerText =
-        "Microphone/Speech error: " +
+      status.innerText =
+        "❌ Microphone error: " +
         event.error;
 
     };
 
 
-  recognition.onresult =
-    function(event) {
+  recognition.onend =
+    function () {
 
-      const transcript =
-        event.results[0][0].transcript;
-
-
-      document.getElementById(
-        "speech-result"
-      ).innerText =
-        `"${transcript}"`;
-
-
-      talkToAI(transcript);
+      console.log(
+        "Speech recognition ended"
+      );
 
     };
 
 }
 
+else {
 
-// =====================================================
-// 8. START / STOP SPEAKING
-// =====================================================
+  speakBtn.disabled = true;
 
-function toggleListening() {
+  status.innerText =
+    "Speech recognition is not supported.";
+
+}
+
+
+// ==========================================
+// START SPEAKING
+// ==========================================
+
+speakBtn.onclick = function () {
 
   if (!recognition) {
-
-    alert(
-      "এই browser-এ Speech Recognition support নেই। Chrome ব্যবহার করে চেষ্টা করুন।"
-    );
 
     return;
 
   }
-
 
   try {
 
     recognition.start();
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.log(error);
 
   }
 
-}
+};
 
 
-// =====================================================
-// 9. AI CONVERSATION
-// =====================================================
+// ==========================================
+// SEND TO AI
+// ==========================================
 
-async function talkToAI(userText) {
+sendBtn.onclick =
+  async function () {
 
-  const aiReply =
-    document.getElementById(
-      "ai-reply"
-    );
-
-
-  const banglaReply =
-    document.getElementById(
-      "ai-reply-bangla"
-    );
+    const text =
+      userText.value.trim();
 
 
-  aiReply.innerText =
-    "🤖 AI is thinking...";
+    if (!text) {
+
+      alert(
+        "Please speak or type something first."
+      );
+
+      return;
+
+    }
 
 
-  banglaReply.innerText =
-    "প্রসেস হচ্ছে...";
+    status.innerText =
+      "🤖 AI is thinking...";
 
 
-  const prompt = `
+    try {
 
-You are Ranjita's friendly English speaking coach.
+      const prompt = `
+You are Ronjita's English learning AI coach.
 
 The student said:
-"${userText}"
+"${text}"
 
-Do the following:
+Reply ONLY as valid JSON in exactly this format:
 
-1. Correct any important grammar mistake gently.
-2. Reply naturally to the student.
-3. Ask one simple follow-up question.
-4. Keep the English suitable for a beginner.
-5. Then provide the Bangla meaning.
+{
+  "reply": "A natural English response to the student.",
+  "correction": "If there is a grammar mistake, explain the correction briefly. If there is no mistake, say the sentence is correct.",
+  "question": "Ask one simple follow-up question in English."
+}
 
-Use exactly this format:
-
-ENGLISH:
-...
-
-BANGLA:
-...
-
+Do not use Markdown.
+Do not put the JSON inside code fences.
 `;
 
 
-  try {
+      const response =
+        await fetch(
+          AI_API_URL,
+          {
 
-    const fullReply =
-      await askAI(prompt);
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+
+                action: "generate",
+
+                message: prompt
+
+              })
+
+            }
+
+          );
 
 
-    const englishMatch =
-      fullReply.match(
-        /ENGLISH:\\s*([\\s\\S]*?)(?=BANGLA:|$)/i
+      const data =
+        await response.json();
+
+
+      if (!response.ok ||
+          !data.success) {
+
+        throw new Error(
+          data.error ||
+          "AI request failed."
+        );
+
+      }
+
+
+      // ==================================
+      // READ GEMINI RESPONSE
+      // ==================================
+
+      let aiData;
+
+
+      try {
+
+        aiData =
+          JSON.parse(data.text);
+
+      }
+
+      catch {
+
+        // Try removing accidental code fences
+
+        const cleaned =
+          data.text
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
+
+        aiData =
+          JSON.parse(cleaned);
+
+      }
+
+
+      // ==================================
+      // SHOW RESULTS
+      // ==================================
+
+      aiReply.innerText =
+        aiData.reply ||
+        "No reply received.";
+
+
+      correction.innerText =
+        aiData.correction ||
+        "No correction available.";
+
+
+      question.innerText =
+        aiData.question ||
+        "Can you tell me more?";
+
+
+      conversations++;
+
+      conversationCount.innerText =
+        conversations;
+
+
+      if (
+        aiData.correction &&
+        !aiData.correction
+          .toLowerCase()
+          .includes("correct")
+      ) {
+
+        corrections++;
+
+        correctionCount.innerText =
+          corrections;
+
+      }
+
+
+      status.innerText =
+        "✅ AI replied!";
+
+
+      // ==================================
+      // AI VOICE
+      // ==================================
+
+      speakText(
+        aiData.reply
       );
 
 
-    const banglaMatch =
-      fullReply.match(
-        /BANGLA:\\s*([\\s\\S]*)/i
-      );
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      status.innerText =
+        "❌ AI connection failed.";
+
+      aiReply.innerText =
+        "Sorry, I couldn't connect to the AI.";
+
+      correction.innerText =
+        "";
+
+      question.innerText =
+        "";
+
+    }
+
+  };
 
 
-    const english =
-      englishMatch
-        ? englishMatch[1].trim()
-        : fullReply;
-
-
-    const bangla =
-      banglaMatch
-        ? banglaMatch[1].trim()
-        : "বাংলা অর্থ পাওয়া যায়নি।";
-
-
-    aiReply.innerText =
-      english;
-
-
-    banglaReply.innerText =
-      bangla;
-
-
-    speakText(english);
-
-
-    increaseScore(1);
-
-
-  } catch (error) {
-
-    aiReply.innerText =
-      "❌ AI Error: " +
-      error.message;
-
-    banglaReply.innerText =
-      "AI-এর সাথে সংযোগ করা যাচ্ছে না।";
-
-  }
-
-}
-
-
-// =====================================================
-// 10. TEXT TO SPEECH
-// =====================================================
+// ==========================================
+// AI VOICE
+// ==========================================
 
 function speakText(text) {
 
   if (
-    "speechSynthesis" in window
+    !("speechSynthesis" in window)
   ) {
-
-    window.speechSynthesis.cancel();
-
-
-    const utterance =
-      new SpeechSynthesisUtterance(
-        text
-      );
-
-
-    utterance.lang =
-      "en-US";
-
-
-    utterance.rate =
-      0.9;
-
-
-    window.speechSynthesis.speak(
-      utterance
-    );
-
-  }
-
-}
-
-
-function speakAIReply() {
-
-  const text =
-    document.getElementById(
-      "ai-reply"
-    ).innerText;
-
-
-  if (
-    text &&
-    text !==
-    "AI response will appear here..."
-  ) {
-
-    speakText(text);
-
-  }
-
-}
-
-
-// =====================================================
-// 11. FRIDAY EXAM STATUS
-// =====================================================
-
-const today =
-  new Date();
-
-
-const isFriday =
-  today.getDay() === 5;
-
-
-if (isFriday) {
-
-  document.getElementById(
-    "exam-status"
-  ).innerText =
-    "🎉 Today is Friday! Weekly Exam Day.";
-
-} else {
-
-  document.getElementById(
-    "exam-status"
-  ).innerText =
-    "Every Friday you can take your weekly AI English exam.";
-
-}
-
-
-// =====================================================
-// 12. START EXAM
-// =====================================================
-
-async function startFridayExam() {
-
-  const examBox =
-    document.getElementById(
-      "exam-box"
-    );
-
-
-  const question =
-    document.getElementById(
-      "exam-question"
-    );
-
-
-  examBox.classList.remove(
-    "hidden"
-  );
-
-
-  question.innerText =
-    "🤖 AI is preparing your exam question...";
-
-
-  const prompt = `
-
-You are an English teacher.
-
-Create ONE beginner-level English exam question.
-
-It can be:
-
-- translation
-OR
-- sentence making
-OR
-- basic grammar.
-
-Return only the question.
-
-`;
-
-
-  try {
-
-    const reply =
-      await askAI(prompt);
-
-
-    question.innerText =
-      "Exam Question: " +
-      reply.trim();
-
-
-  } catch (error) {
-
-    question.innerText =
-      "❌ Exam Error: " +
-      error.message;
-
-  }
-
-}
-
-
-// =====================================================
-// 13. SUBMIT EXAM ANSWER
-// =====================================================
-
-async function submitExamAnswer() {
-
-  const answer =
-    document
-      .getElementById(
-        "exam-answer"
-      )
-      .value
-      .trim();
-
-
-  const question =
-    document.getElementById(
-      "exam-question"
-    ).innerText;
-
-
-  const feedback =
-    document.getElementById(
-      "exam-feedback"
-    );
-
-
-  if (!answer) {
-
-    alert(
-      "Write your answer first!"
-    );
 
     return;
 
   }
 
 
-  feedback.innerText =
-    "🤖 AI is checking your answer...";
+  const speech =
+    new SpeechSynthesisUtterance(
+      text
+    );
 
 
-  const prompt = `
+  speech.lang =
+    "en-US";
 
-You are an English teacher.
+  speech.rate =
+    0.9;
 
-Exam question:
-"${question}"
-
-Student answer:
-"${answer}"
-
-Evaluate the answer.
-
-Give:
-
-1. Score out of 10.
-2. Whether it is correct.
-3. Correct answer if necessary.
-4. Short English feedback.
-5. Bangla explanation.
-
-Keep it simple.
-
-`;
+  speech.pitch =
+    1;
 
 
-  try {
-
-    const reply =
-      await askAI(prompt);
-
-
-    feedback.innerText =
-      reply;
-
-
-    increaseScore(2);
-
-
-  } catch (error) {
-
-    feedback.innerText =
-      "❌ Exam Error: " +
-      error.message;
-
-  }
+  window.speechSynthesis.speak(
+    speech
+  );
 
 }
-
-
-// =====================================================
-// 14. START AI STATUS CHECK
-// =====================================================
-
-checkAIConnection();
