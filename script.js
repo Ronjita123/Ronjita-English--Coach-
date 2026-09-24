@@ -1,949 +1,142 @@
-/* =========================================================
-   RONJITA ENGLISH COACH
-   Daily English Learning System
-   ========================================================= */
+// ১. Motivational Quotes (Random)
+const quotes = [
+  '"Practice makes progress, not perfection!"',
+  '"Every day is a new chance to improve your English."',
+  '"Small steps every day lead to big achievements."',
+  '"Don\'t be afraid of making mistakes; learn from them!"'
+];
+document.getElementById('motivational-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
 
-
-/* =========================================================
-   DAILY VOCABULARY
-   প্রতিদিনের জন্য আলাদা vocabulary
-   ========================================================= */
-
-const dailyVocabulary = [
-
-  [
-    {
-      word: "Improve",
-      meaning: "উন্নতি করা",
-      example: "I want to improve my English."
-    },
-    {
-      word: "Confident",
-      meaning: "আত্মবিশ্বাসী",
-      example: "I want to become more confident."
-    },
-    {
-      word: "Practice",
-      meaning: "অনুশীলন করা",
-      example: "I practice English every day."
-    },
-    {
-      word: "Learn",
-      meaning: "শেখা",
-      example: "I learn new words every day."
-    },
-    {
-      word: "Goal",
-      meaning: "লক্ষ্য",
-      example: "My goal is to speak English fluently."
-    }
-  ],
-
-  [
-    {
-      word: "Brave",
-      meaning: "সাহসী",
-      example: "Be brave when you speak English."
-    },
-    {
-      word: "Progress",
-      meaning: "অগ্রগতি",
-      example: "I can see my progress."
-    },
-    {
-      word: "Habit",
-      meaning: "অভ্যাস",
-      example: "Practice can become a good habit."
-    },
-    {
-      word: "Effort",
-      meaning: "চেষ্টা",
-      example: "Your effort will help you improve."
-    },
-    {
-      word: "Success",
-      meaning: "সাফল্য",
-      example: "Hard work can lead to success."
-    }
-  ],
-
-  [
-    {
-      word: "Journey",
-      meaning: "যাত্রা",
-      example: "Learning English is a journey."
-    },
-    {
-      word: "Useful",
-      meaning: "উপকারী",
-      example: "English is useful in many situations."
-    },
-    {
-      word: "Simple",
-      meaning: "সহজ",
-      example: "Let's start with simple English."
-    },
-    {
-      word: "Understand",
-      meaning: "বোঝা",
-      example: "I understand this sentence."
-    },
-    {
-      word: "Remember",
-      meaning: "মনে রাখা",
-      example: "I remember new vocabulary."
-    }
-  ],
-
-  [
-    {
-      word: "Opportunity",
-      meaning: "সুযোগ",
-      example: "Every day is a new opportunity."
-    },
-    {
-      word: "Challenge",
-      meaning: "চ্যালেঞ্জ",
-      example: "Learning English is a challenge."
-    },
-    {
-      word: "Communicate",
-      meaning: "যোগাযোগ করা",
-      example: "English helps us communicate."
-    },
-    {
-      word: "Express",
-      meaning: "প্রকাশ করা",
-      example: "I can express my ideas in English."
-    },
-    {
-      word: "Fluent",
-      meaning: "সাবলীল",
-      example: "I want to become fluent in English."
-    }
-  ],
-
-  [
-    {
-      word: "Achieve",
-      meaning: "অর্জন করা",
-      example: "I will achieve my English goal."
-    },
-    {
-      word: "Focus",
-      meaning: "মনোযোগ দেওয়া",
-      example: "I need to focus on my practice."
-    },
-    {
-      word: "Develop",
-      meaning: "উন্নত করা",
-      example: "I want to develop my speaking skills."
-    },
-    {
-      word: "Mistake",
-      meaning: "ভুল",
-      example: "Making mistakes is part of learning."
-    },
-    {
-      word: "Patient",
-      meaning: "ধৈর্যশীল",
-      example: "Be patient with yourself."
-    }
-  ],
-
-  [
-    {
-      word: "Motivate",
-      meaning: "উৎসাহিত করা",
-      example: "My progress motivates me."
-    },
-    {
-      word: "Positive",
-      meaning: "ইতিবাচক",
-      example: "Keep a positive attitude."
-    },
-    {
-      word: "Knowledge",
-      meaning: "জ্ঞান",
-      example: "Reading gives us knowledge."
-    },
-    {
-      word: "Improve",
-      meaning: "উন্নতি করা",
-      example: "Practice helps me improve."
-    },
-    {
-      word: "Believe",
-      meaning: "বিশ্বাস করা",
-      example: "Believe in yourself."
-    }
-  ],
-
-  [
-    {
-      word: "Opportunity",
-      meaning: "সুযোগ",
-      example: "I look for every opportunity to speak English."
-    },
-    {
-      word: "Prepare",
-      meaning: "প্রস্তুত করা",
-      example: "I prepare for my English practice."
-    },
-    {
-      word: "Discover",
-      meaning: "আবিষ্কার করা",
-      example: "I discover new words every day."
-    },
-    {
-      word: "Useful",
-      meaning: "উপকারী",
-      example: "This word is very useful."
-    },
-    {
-      word: "Achieve",
-      meaning: "অর্জন করা",
-      example: "I can achieve my goal."
-    }
-  ]
-
+// ২. অটোমেটিক দৈনিক ভোকাবুলারি লিস্ট
+const vocabularies = [
+  { word: "Improve", meaning: "উন্নতি করা / সুন্দর করা", example: "I want to improve my English speaking skill." },
+  { word: "Achieve", meaning: "অর্জিত করা / অর্জন করা", example: "You can achieve your goals with hard work." },
+  { word: "Confident", meaning: "আত্মবিশ্বাসী", example: "Practice makes you more confident." },
+  { word: "Practice", meaning: "অনুশীলন করা", example: "I practice English every single day." },
+  { word: "Fluency", meaning: "ভাষার সাবলীলতা", example: "Listening daily increases your fluency." }
 ];
 
-
-/* =========================================================
-   PROGRESS SYSTEM
-   ========================================================= */
-
-let progress = JSON.parse(
-  localStorage.getItem("ronjitaEnglishProgress")
-) || {
-  currentDay: 1,
-  completedDays: 0,
-  lastCompletedDate: null
-};
-
-
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
-
-const dayBadge =
-  document.getElementById("dayBadge");
-
-const dayTitle =
-  document.getElementById("dayTitle");
-
-const completeDayNumber =
-  document.getElementById("completeDayNumber");
-
-const currentDayStat =
-  document.getElementById("currentDayStat");
-
-const completedDaysStat =
-  document.getElementById("completedDaysStat");
-
-const vocabularyCountStat =
-  document.getElementById("vocabularyCountStat");
-
-const vocabularyList =
-  document.getElementById("vocabularyList");
-
-const selectedWord =
-  document.getElementById("selectedWord");
-
-const sentenceInput =
-  document.getElementById("sentenceInput");
-
-const checkSentenceButton =
-  document.getElementById("checkSentenceButton");
-
-const sentenceResult =
-  document.getElementById("sentenceResult");
-
-const messageInput =
-  document.getElementById("messageInput");
-
-const sendButton =
-  document.getElementById("sendButton");
-
-const chat =
-  document.getElementById("chat");
-
-const startSpeakingButton =
-  document.getElementById("startSpeakingButton");
-
-const speakingStatus =
-  document.getElementById("speakingStatus");
-
-const speechText =
-  document.getElementById("speechText");
-
-const speakSentenceButton =
-  document.getElementById("speakSentenceButton");
-
-const completeDayButton =
-  document.getElementById("completeDayButton");
-
-const completionMessage =
-  document.getElementById("completionMessage");
-
-const progressText =
-  document.getElementById("progressText");
-
-const goalVocabulary =
-  document.getElementById("goalVocabulary");
-
-const goalSentence =
-  document.getElementById("goalSentence");
-
-const goalSpeaking =
-  document.getElementById("goalSpeaking");
-
-
-/* =========================================================
-   SAVE PROGRESS
-   ========================================================= */
-
-function saveProgress() {
-
-  localStorage.setItem(
-    "ronjitaEnglishProgress",
-    JSON.stringify(progress)
-  );
-
-}
-
-
-/* =========================================================
-   LOAD DAILY VOCABULARY
-   ========================================================= */
-
-function getTodayVocabulary() {
-
-  const index =
-    (progress.currentDay - 1) %
-    dailyVocabulary.length;
-
-  return dailyVocabulary[index];
-
-}
-
-
-/* =========================================================
-   DISPLAY DAY
-   ========================================================= */
-
-function displayDay() {
-
-  dayBadge.textContent =
-    "DAY " + progress.currentDay;
-
-  dayTitle.textContent =
-    "Day " + progress.currentDay;
-
-  completeDayNumber.textContent =
-    progress.currentDay;
-
-  currentDayStat.textContent =
-    progress.currentDay;
-
-  completedDaysStat.textContent =
-    progress.completedDays;
-
-  progressText.textContent =
-    "You have completed " +
-    progress.completedDays +
-    " day(s) of your English journey. 🌱";
-
-}
-
-
-/* =========================================================
-   DISPLAY VOCABULARY
-   ========================================================= */
-
-function displayVocabulary() {
-
-  const words = getTodayVocabulary();
-
-  vocabularyList.innerHTML = "";
-
-  words.forEach(function(item, index) {
-
-    const vocabulary = document.createElement("div");
-
-    vocabulary.className =
-      "vocabulary-item";
-
-    vocabulary.innerHTML = `
-
-      <div class="word-top">
-
-        <div>
-
-          <div class="word">
-            ${item.word}
-          </div>
-
-          <div class="meaning">
-            বাংলা অর্থ: ${item.meaning}
-          </div>
-
-        </div>
-
-        <button
-          class="use-word-button"
-          data-word="${item.word}"
-        >
-          Use This Word
-        </button>
-
-      </div>
-
-      <div class="example">
-
-        <strong>Example:</strong>
-        ${item.example}
-
-      </div>
-
-    `;
-
-    vocabularyList.appendChild(vocabulary);
-
-  });
-
-  vocabularyCountStat.textContent =
-    words.length;
-
-}
-
-
-/* =========================================================
-   SELECT VOCABULARY WORD
-   ========================================================= */
-
-vocabularyList.addEventListener(
-  "click",
-  function(event) {
-
-    if (
-      event.target.classList.contains(
-        "use-word-button"
-      )
-    ) {
-
-      const word =
-        event.target.getAttribute("data-word");
-
-      selectedWord.textContent =
-        word;
-
-      sentenceInput.focus();
-
-      sentenceResult.innerHTML =
-        "";
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   CHECK SENTENCE
-   ========================================================= */
-
-checkSentenceButton.addEventListener(
-  "click",
-  function() {
-
-    const sentence =
-      sentenceInput.value.trim();
-
-    const word =
-      selectedWord.textContent.trim();
-
-    if (word === "Select a vocabulary word") {
-
-      sentenceResult.innerHTML =
-        '<p class="error">Please select a vocabulary word first.</p>';
-
-      return;
-
-    }
-
-    if (sentence === "") {
-
-      sentenceResult.innerHTML =
-        '<p class="error">Please write a sentence first.</p>';
-
-      return;
-
-    }
-
-    const wordLower =
-      word.toLowerCase();
-
-    const sentenceLower =
-      sentence.toLowerCase();
-
-    if (sentenceLower.includes(wordLower)) {
-
-      sentenceResult.innerHTML =
-        '<p class="success">✓ Great! You used the vocabulary word correctly.</p>';
-
-      goalSentence.textContent =
-        "☑ Make a sentence";
-
-    } else {
-
-      sentenceResult.innerHTML =
-        '<p class="error">Try to use the word "' +
-        word +
-        '" in your sentence.</p>';
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   TEXT CONVERSATION
-   ========================================================= */
-
-sendButton.addEventListener(
-  "click",
-  sendMessage
-);
-
-
-messageInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (event.key === "Enter") {
-
-      sendMessage();
-
-    }
-
-  }
-);
-
-
-function sendMessage() {
-
-  const message =
-    messageInput.value.trim();
-
-  if (message === "") {
-
+// আজকের তারিখ অনুযায়ী অটোমেটিক ওয়ার্ড নেওয়া
+const dayIndex = new Date().getDate() % vocabularies.length;
+const todayVocab = vocabularies[dayIndex];
+
+document.getElementById('word-display').innerText = `Word: ${todayVocab.word}`;
+document.getElementById('meaning-display').innerText = `Meaning: ${todayVocab.meaning}`;
+document.getElementById('example-display').innerText = `Example: ${todayVocab.example}`;
+
+// ৩. বাক্য তৈরি ও ব্যাকরণ ভুল সনাক্তকরণ লজিক
+function checkSentence() {
+  const userInput = document.getElementById('user-sentence').value.trim();
+  const feedbackBox = document.getElementById('sentence-feedback');
+  feedbackBox.classList.remove('hidden', 'success', 'error');
+
+  if (!userInput) {
+    feedbackBox.classList.add('error');
+    feedbackBox.innerText = "⚠️ Please write an English sentence first!";
     return;
-
   }
 
+  const textLower = userInput.toLowerCase();
+  const wordLower = todayVocab.word.toLowerCase();
 
-  const userMessage =
-    document.createElement("div");
+  // ব্যাকরণ চেকিং সিস্টেম
+  let errorFound = false;
+  let correctionText = "";
 
-  userMessage.className =
-    "user-message";
+  if (!textLower.includes(wordLower)) {
+    errorFound = true;
+    correctionText = `❌ Please use today's word "${todayVocab.word}" in your sentence.`;
+  } else if (textLower.includes("want improve") || textLower.includes("want learn")) {
+    errorFound = true;
+    correctionText = `❌ Grammar Error! You missed 'to'. Correct: "I want TO ${todayVocab.word.toLowerCase()}..."`;
+  } else if (textLower.includes("how much time i practice")) {
+    errorFound = true;
+    correctionText = `❌ Grammar Error! Correct format: "How much time should I practice every day?"`;
+  } else if (textLower.includes("i am agree")) {
+    errorFound = true;
+    correctionText = `❌ Grammar Error! Say "I agree" instead of "I am agree".`;
+  }
 
-  userMessage.innerHTML =
-    "<strong>You:</strong> " +
-    escapeHTML(message);
-
-  chat.appendChild(userMessage);
-
-
-  const coachMessage =
-    document.createElement("div");
-
-  coachMessage.className =
-    "coach-message";
-
-  const response =
-    getCoachResponse(message);
-
-  coachMessage.innerHTML =
-    "<strong>AI Coach:</strong> " +
-    response;
-
-  chat.appendChild(coachMessage);
-
-
-  messageInput.value = "";
-
-  chat.scrollTop =
-    chat.scrollHeight;
-
+  if (errorFound) {
+    feedbackBox.classList.add('error');
+    feedbackBox.innerText = correctionText;
+  } else {
+    feedbackBox.classList.add('success');
+    feedbackBox.innerText = `✓ Excellent! Your sentence is grammatically correct and uses the word "${todayVocab.word}" properly.`;
+  }
 }
 
-
-/* =========================================================
-   SIMPLE COACH RESPONSE
-   ========================================================= */
-
-function getCoachResponse(message) {
-
-  const text =
-    message.toLowerCase();
-
-  if (
-    text.includes("hello") ||
-    text.includes("hi")
-  ) {
-
-    return "Hello! 😊 Nice to practice English with you. How are you today?";
-
-  }
-
-  if (
-    text.includes("how are you")
-  ) {
-
-    return "I'm doing great! Thank you. Now tell me about your day.";
-
-  }
-
-  if (
-    text.includes("my name")
-  ) {
-
-    return "Nice to meet you! Keep practicing and tell me something about yourself.";
-
-  }
-
-  if (
-    text.includes("thank")
-  ) {
-
-    return "You're welcome! Keep going. You're doing well. 🌱";
-
-  }
-
-  if (
-    text.includes("good")
-  ) {
-
-    return "That's great! Can you make a longer sentence using today's vocabulary?";
-
-  }
-
-  return "Good attempt! 😊 Try to make your sentence a little longer. Keep practicing English every day.";
-
-}
-
-
-/* =========================================================
-   SECURITY
-   ========================================================= */
-
-function escapeHTML(text) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent =
-    text;
-
-  return div.innerHTML;
-
-}
-
-
-/* =========================================================
-   SPEECH RECOGNITION
-   ========================================================= */
-
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
-
-let recognition = null;
-
+// ৪. ভয়েস স্পিকিং এবং AI উত্তর দেওয়া (Text-to-Speech & Speech Recognition)
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
 
 if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
 
-  recognition =
-    new SpeechRecognition();
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('speech-result').innerText = `"${transcript}"`;
+    processAIConversation(transcript);
+  };
 
-  recognition.lang =
-    "en-US";
-
-  recognition.interimResults =
-    false;
-
-  recognition.continuous =
-    false;
-
-
-  recognition.onstart =
-    function() {
-
-      startSpeakingButton.classList.add(
-        "listening"
-      );
-
-      startSpeakingButton.textContent =
-        "🔴 Listening...";
-
-      speakingStatus.textContent =
-        "I'm listening. Speak in English...";
-
-    };
-
-
-  recognition.onresult =
-    function(event) {
-
-      const transcript =
-        event.results[0][0].transcript;
-
-      speechText.textContent =
-        transcript;
-
-      speakingStatus.textContent =
-        "Great! I heard you. 🎉";
-
-      goalSpeaking.textContent =
-        "☑ Practice speaking";
-
-      startSpeakingButton.classList.remove(
-        "listening"
-      );
-
-      startSpeakingButton.textContent =
-        "🎤 Start Speaking";
-
-    };
-
-
-  recognition.onerror =
-    function() {
-
-      speakingStatus.textContent =
-        "I couldn't hear you. Please try again.";
-
-      startSpeakingButton.classList.remove(
-        "listening"
-      );
-
-      startSpeakingButton.textContent =
-        "🎤 Start Speaking";
-
-    };
-
-
-  recognition.onend =
-    function() {
-
-      startSpeakingButton.classList.remove(
-        "listening"
-      );
-
-      startSpeakingButton.textContent =
-        "🎤 Start Speaking";
-
-    };
-
-
-  startSpeakingButton.addEventListener(
-    "click",
-    function() {
-
-      try {
-
-        recognition.start();
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-
-    }
-  );
-
-
+  recognition.onerror = function() {
+    alert("Speech recognition error. Please make sure microphone permission is allowed.");
+    document.getElementById('mic-btn').innerText = "🎤 Start Speaking";
+  };
 } else {
-
-  startSpeakingButton.disabled =
-    true;
-
-  startSpeakingButton.textContent =
-    "🎤 Speech Not Supported";
-
-  speakingStatus.textContent =
-    "Your browser does not support speech recognition.";
-
+  alert("Your browser does not support Speech Recognition. Please use Google Chrome.");
 }
 
-
-/* =========================================================
-   TEXT TO SPEECH
-   ========================================================= */
-
-speakSentenceButton.addEventListener(
-  "click",
-  function() {
-
-    const text =
-      speechText.textContent;
-
-    if (
-      !text ||
-      text ===
-      "Your spoken English will appear here."
-    ) {
-
-      speakText(
-        "Hello! Let's practice English together."
-      );
-
-      return;
-
-    }
-
-    speakText(text);
-
+function toggleListening() {
+  if (recognition) {
+    recognition.start();
+    document.getElementById('mic-btn').innerText = "🎙️ Listening... Speak now!";
   }
-);
+}
 
+function processAIConversation(userText) {
+  document.getElementById('mic-btn').innerText = "🎤 Start Speaking";
+  
+  const textLower = userText.toLowerCase();
+  let correction = "✓ Your grammar looks good!";
+  let aiReply = "That's great! Keep practicing your English every day.";
+
+  // লাইভ ভুল ধরা ও উপযুক্ত কথা বলা
+  if (textLower.includes("want improve") || textLower.includes("want learn")) {
+    correction = "❌ Grammar Tip: You said 'want improve'. It should be 'want TO improve'.";
+    aiReply = "Yes! You can definitely improve your English if you practice daily with me.";
+  } else if (textLower.includes("how are you")) {
+    correction = "✓ Your sentence is 100% correct!";
+    aiReply = "I am doing great! How are you doing today?";
+  } else if (textLower.includes("what is your name")) {
+    correction = "✓ Your sentence is correct!";
+    aiReply = "I am your AI English Coach! I am here to help you practice English.";
+  } else if (textLower.includes("how much time")) {
+    correction = "💡 Suggestion: Say 'How much time should I practice?'";
+    aiReply = "Practicing just 15 to 30 minutes every day is enough to become fluent.";
+  }
+
+  document.getElementById('ai-correction').innerText = correction;
+  document.getElementById('ai-reply').innerText = aiReply;
+
+  // AI মুখে উত্তর দেবে (Audio Response)
+  speakText(aiReply);
+}
 
 function speakText(text) {
-
-  if (
-    !("speechSynthesis" in window)
-  ) {
-
-    alert(
-      "Your browser does not support voice playback."
-    );
-
-    return;
-
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel(); // আগের ভয়েস অফ করা
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.9; // ক্লিয়ার ও নরমাল স্পিড
+    window.speechSynthesis.speak(utterance);
   }
-
-  const speech =
-    new SpeechSynthesisUtterance(text);
-
-  speech.lang =
-    "en-US";
-
-  speech.rate =
-    0.9;
-
-  window.speechSynthesis.cancel();
-
-  window.speechSynthesis.speak(
-    speech
-  );
-
 }
 
-
-/* =========================================================
-   COMPLETE DAY
-   ========================================================= */
-
-completeDayButton.addEventListener(
-  "click",
-  function() {
-
-    if (
-      progress.lastCompletedDate ===
-      getDateKey()
-    ) {
-
-      completionMessage.innerHTML =
-        '<p class="error">You have already completed today\'s lesson.</p>';
-
-      return;
-
-    }
-
-
-    progress.completedDays++;
-
-    progress.lastCompletedDate =
-      getDateKey();
-
-    progress.currentDay++;
-
-    saveProgress();
-
-
-    completionMessage.innerHTML =
-      '<p class="success">🎉 Day completed! Your next lesson is Day ' +
-      progress.currentDay +
-      '.</p>';
-
-
-    displayDay();
-
-    displayVocabulary();
-
-
-    goalVocabulary.textContent =
-      "☐ Learn today's vocabulary";
-
-    goalSentence.textContent =
-      "☐ Make a sentence";
-
-    goalSpeaking.textContent =
-      "☐ Practice speaking";
-
-
-    selectedWord.textContent =
-      "Select a vocabulary word";
-
-    sentenceInput.value =
-      "";
-
-    sentenceResult.innerHTML =
-      "";
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
+function speakAIReply() {
+  const replyText = document.getElementById('ai-reply').innerText;
+  if (replyText && replyText !== "AI coach response will appear here...") {
+    speakText(replyText);
   }
-);
-
-
-/* =========================================================
-   DATE KEY
-   ========================================================= */
-
-function getDateKey() {
-
-  const date =
-    new Date();
-
-  return (
-    date.getFullYear() +
-    "-" +
-    String(
-      date.getMonth() + 1
-    ).padStart(2, "0") +
-    "-" +
-    String(
-      date.getDate()
-    ).padStart(2, "0")
-  );
-
-}
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-displayDay();
-
-displayVocabulary();
+       }
