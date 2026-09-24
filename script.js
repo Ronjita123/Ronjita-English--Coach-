@@ -1,72 +1,78 @@
-// ১. Motivational Quotes (Random)
-const quotes = [
-  '"Practice makes progress, not perfection!"',
-  '"Every day is a new chance to improve your English."',
-  '"Small steps every day lead to big achievements."',
-  '"Don\'t be afraid of making mistakes; learn from them!"'
-];
-document.getElementById('motivational-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
-
-// ২. অটোমেটিক দৈনিক ভোকাবুলারি লিস্ট
-const vocabularies = [
-  { word: "Improve", meaning: "উন্নতি করা / সুন্দর করা", example: "I want to improve my English speaking skill." },
-  { word: "Achieve", meaning: "অর্জিত করা / অর্জন করা", example: "You can achieve your goals with hard work." },
-  { word: "Confident", meaning: "আত্মবিশ্বাসী", example: "Practice makes you more confident." },
-  { word: "Practice", meaning: "অনুশীলন করা", example: "I practice English every single day." },
-  { word: "Fluency", meaning: "ভাষার সাবলীলতা", example: "Listening daily increases your fluency." }
+// ১. ডেলি শব্দ ভান্ডার (বাংলা উচ্চারণসহ)
+const vocabSets = [
+  [
+    { word: "Fluency", pronounce: "ফ্লুয়েন্সি", meaning: "ভাষার সাবলীলতা", example: "I want fluency in English." },
+    { word: "Improve", pronounce: "ইমপ্রুভ", meaning: "উন্নতি করা", example: "Practice helps to improve skills." },
+    { word: "Confident", pronounce: "কনফিডেন্ট", meaning: "আত্মবিশ্বাসী", example: "Be confident while speaking." }
+  ],
+  [
+    { word: "Achieve", pronounce: "অ্যাচিভ", meaning: "অর্জন করা", example: "Work hard to achieve goals." },
+    { word: "Vocabulary", pronounce: "ভোকাভিউলারি", meaning: "শব্দভান্ডার", example: "Learn new vocabulary daily." },
+    { word: "Practice", pronounce: "প্র্যাকটিস", meaning: "অনুশীলন", example: "Daily practice brings success." }
+  ]
 ];
 
-// আজকের তারিখ অনুযায়ী অটোমেটিক ওয়ার্ড নেওয়া
-const dayIndex = new Date().getDate() % vocabularies.length;
-const todayVocab = vocabularies[dayIndex];
+// পয়েন্ট সিস্টেম লোড করা
+let score = parseInt(localStorage.getItem('userScore')) || 0;
+let checkedCount = parseInt(localStorage.getItem('checkedCount')) || 0;
 
-document.getElementById('word-display').innerText = `Word: ${todayVocab.word}`;
-document.getElementById('meaning-display').innerText = `Meaning: ${todayVocab.meaning}`;
-document.getElementById('example-display').innerText = `Example: ${todayVocab.example}`;
+document.getElementById('daily-score').innerText = score;
+document.getElementById('checked-count').innerText = checkedCount;
 
-// ৩. বাক্য তৈরি ও ব্যাকরণ ভুল সনাক্তকরণ লজিক
+// দিনের ওপর ভিত্তি করে শব্দ লোড করা
+const todayIndex = new Date().getDate() % vocabSets.length;
+const todayVocabs = vocabSets[todayIndex];
+
+const vocabContainer = document.getElementById('vocab-container');
+vocabContainer.innerHTML = todayVocabs.map(v => `
+  <div class="vocab-card">
+    <div class="vocab-word">${v.word} <span class="vocab-pronounce">(${v.pronounce})</span></div>
+    <div class="vocab-meaning">অর্থ: ${v.meaning}</div>
+  </div>
+`).join('');
+
+// ২. সেন্টেন্স চেক ও পয়েন্ট যোগ লজিক
 function checkSentence() {
-  const userInput = document.getElementById('user-sentence').value.trim();
-  const feedbackBox = document.getElementById('sentence-feedback');
-  feedbackBox.classList.remove('hidden', 'success', 'error');
+  const input = document.getElementById('user-sentence').value.trim();
+  const feedback = document.getElementById('sentence-feedback');
+  feedback.classList.remove('hidden', 'success', 'error');
 
-  if (!userInput) {
-    feedbackBox.classList.add('error');
-    feedbackBox.innerText = "⚠️ Please write an English sentence first!";
+  if (!input) {
+    feedback.classList.add('error');
+    feedback.innerText = "⚠️ Please write a sentence first!";
     return;
   }
 
-  const textLower = userInput.toLowerCase();
-  const wordLower = todayVocab.word.toLowerCase();
-
-  // ব্যাকরণ চেকিং সিস্টেম
-  let errorFound = false;
-  let correctionText = "";
-
-  if (!textLower.includes(wordLower)) {
-    errorFound = true;
-    correctionText = `❌ Please use today's word "${todayVocab.word}" in your sentence.`;
-  } else if (textLower.includes("want improve") || textLower.includes("want learn")) {
-    errorFound = true;
-    correctionText = `❌ Grammar Error! You missed 'to'. Correct: "I want TO ${todayVocab.word.toLowerCase()}..."`;
-  } else if (textLower.includes("how much time i practice")) {
-    errorFound = true;
-    correctionText = `❌ Grammar Error! Correct format: "How much time should I practice every day?"`;
+  const textLower = input.toLowerCase();
+  
+  // গ্রামার ভুল সনাক্তকরণ
+  let grammarError = "";
+  if (textLower.includes("want improve") || textLower.includes("want learn")) {
+    grammarError = "Missing 'to' after 'want'. Correct: 'want TO improve'";
   } else if (textLower.includes("i am agree")) {
-    errorFound = true;
-    correctionText = `❌ Grammar Error! Say "I agree" instead of "I am agree".`;
+    grammarError = "Say 'I agree' instead of 'I am agree'.";
   }
 
-  if (errorFound) {
-    feedbackBox.classList.add('error');
-    feedbackBox.innerText = correctionText;
+  if (grammarError) {
+    feedback.classList.add('error');
+    feedback.innerText = "❌ Grammar Error: " + grammarError;
   } else {
-    feedbackBox.classList.add('success');
-    feedbackBox.innerText = `✓ Excellent! Your sentence is grammatically correct and uses the word "${todayVocab.word}" properly.`;
+    // পয়েন্ট হিসাব
+    score += 10;
+    checkedCount += 1;
+    localStorage.setItem('userScore', score);
+    localStorage.setItem('checkedCount', checkedCount);
+    
+    document.getElementById('daily-score').innerText = score;
+    document.getElementById('checked-count').innerText = checkedCount;
+
+    feedback.classList.add('success');
+    feedback.innerText = "✓ Excellent sentence! You earned +10 points. 🎉";
+    document.getElementById('user-sentence').value = ""; // বক্স ক্লিয়ার করা
   }
 }
 
-// ৪. ভয়েস স্পিকিং এবং AI উত্তর দেওয়া (Text-to-Speech & Speech Recognition)
+// ৩. ভয়েস স্পিকিং এবং ডাইনামিক AI চ্যাটিং
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 
@@ -79,19 +85,14 @@ if (SpeechRecognition) {
     document.getElementById('speech-result').innerText = `"${transcript}"`;
     processAIConversation(transcript);
   };
-
-  recognition.onerror = function() {
-    alert("Speech recognition error. Please make sure microphone permission is allowed.");
-    document.getElementById('mic-btn').innerText = "🎤 Start Speaking";
-  };
-} else {
-  alert("Your browser does not support Speech Recognition. Please use Google Chrome.");
 }
 
 function toggleListening() {
   if (recognition) {
     recognition.start();
     document.getElementById('mic-btn').innerText = "🎙️ Listening... Speak now!";
+  } else {
+    alert("Speech recognition is not supported in this browser.");
   }
 }
 
@@ -99,44 +100,42 @@ function processAIConversation(userText) {
   document.getElementById('mic-btn').innerText = "🎤 Start Speaking";
   
   const textLower = userText.toLowerCase();
-  let correction = "✓ Your grammar looks good!";
-  let aiReply = "That's great! Keep practicing your English every day.";
+  let correction = "✓ Grammar looks good!";
+  let aiReply = "";
 
-  // লাইভ ভুল ধরা ও উপযুক্ত কথা বলা
-  if (textLower.includes("want improve") || textLower.includes("want learn")) {
-    correction = "❌ Grammar Tip: You said 'want improve'. It should be 'want TO improve'.";
-    aiReply = "Yes! You can definitely improve your English if you practice daily with me.";
+  // ডাইনামিক কনভারসেশন লজিক
+  if (textLower.includes("hello") || textLower.includes("hi")) {
+    aiReply = "Hello Ranjita! How are you doing today? What do you want to practice?";
   } else if (textLower.includes("how are you")) {
-    correction = "✓ Your sentence is 100% correct!";
-    aiReply = "I am doing great! How are you doing today?";
-  } else if (textLower.includes("what is your name")) {
-    correction = "✓ Your sentence is correct!";
-    aiReply = "I am your AI English Coach! I am here to help you practice English.";
-  } else if (textLower.includes("how much time")) {
-    correction = "💡 Suggestion: Say 'How much time should I practice?'";
-    aiReply = "Practicing just 15 to 30 minutes every day is enough to become fluent.";
+    aiReply = "I am doing great, thank you! How has your English practice been going?";
+  } else if (textLower.includes("want improve")) {
+    correction = "❌ Correction: Say 'I want TO improve' instead of 'want improve'.";
+    aiReply = "That's a good goal! Daily speaking practice will surely improve your fluency.";
+  } else if (textLower.includes("help me")) {
+    aiReply = "Sure! Ask me any question or practice speaking sentences with me.";
+  } else {
+    aiReply = `That sounds interesting! Tell me more about "${userText}".`;
   }
 
   document.getElementById('ai-correction').innerText = correction;
   document.getElementById('ai-reply').innerText = aiReply;
 
-  // AI মুখে উত্তর দেবে (Audio Response)
   speakText(aiReply);
 }
 
 function speakText(text) {
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // আগের ভয়েস অফ করা
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
-    utterance.rate = 0.9; // ক্লিয়ার ও নরমাল স্পিড
+    utterance.rate = 0.9;
     window.speechSynthesis.speak(utterance);
   }
 }
 
 function speakAIReply() {
   const replyText = document.getElementById('ai-reply').innerText;
-  if (replyText && replyText !== "AI coach response will appear here...") {
+  if (replyText && replyText !== "AI response will appear here...") {
     speakText(replyText);
   }
-       }
+  }
