@@ -1,126 +1,103 @@
-// ১. ডেলি শব্দ ভান্ডার (বাংলা উচ্চারণসহ)
+// ১. API Key সেভ
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (key) {
+    localStorage.setItem('gemini_api_key', key);
+    alert('API Key Saved Successfully!');
+  }
+}
+document.getElementById('api-key-input').value = localStorage.getItem('gemini_api_key') || '';
+
+// ২. ভোকাবুলারি লিস্ট
 const vocabSets = [
-  [
-    { word: "Fluency", pronounce: "ফ্লুয়েন্সি", meaning: "ভাষার সাবলীলতা", example: "I want fluency in English." },
-    { word: "Improve", pronounce: "ইমপ্রুভ", meaning: "উন্নতি করা", example: "Practice helps to improve skills." },
-    { word: "Confident", pronounce: "কনফিডেন্ট", meaning: "আত্মবিশ্বাসী", example: "Be confident while speaking." }
-  ],
-  [
-    { word: "Achieve", pronounce: "অ্যাচিভ", meaning: "অর্জন করা", example: "Work hard to achieve goals." },
-    { word: "Vocabulary", pronounce: "ভোকাভিউলারি", meaning: "শব্দভান্ডার", example: "Learn new vocabulary daily." },
-    { word: "Practice", pronounce: "প্র্যাকটিস", meaning: "অনুশীলন", example: "Daily practice brings success." }
-  ]
+  [{ word: "Improve", pronounce: "ইমপ্রুভ", meaning: "উন্নতি করা" }, { word: "Fluency", pronounce: "ফ্লুয়েন্সি", meaning: "সাবলীলতা" }],
+  [{ word: "Achieve", pronounce: "অ্যাচিভ", meaning: "অর্জন করা" }, { word: "Confident", pronounce: "কনফিডেন্ট", meaning: "আত্মবিশ্বাসী" }],
+  [{ word: "Practice", pronounce: "প্র্যাকটিস", meaning: "অনুশীলন" }, { word: "Vocabulary", pronounce: "ভোকাভিউলারি", meaning: "শব্দভান্ডার" }]
 ];
 
-// পয়েন্ট সিস্টেম লোড করা
-let score = parseInt(localStorage.getItem('userScore')) || 0;
-let checkedCount = parseInt(localStorage.getItem('checkedCount')) || 0;
-
-document.getElementById('daily-score').innerText = score;
-document.getElementById('checked-count').innerText = checkedCount;
-
-// দিনের ওপর ভিত্তি করে শব্দ লোড করা
-const todayIndex = new Date().getDate() % vocabSets.length;
-const todayVocabs = vocabSets[todayIndex];
-
-const vocabContainer = document.getElementById('vocab-container');
-vocabContainer.innerHTML = todayVocabs.map(v => `
+const todayVocabs = vocabSets[new Date().getDate() % vocabSets.length];
+document.getElementById('vocab-container').innerHTML = todayVocabs.map(v => `
   <div class="vocab-card">
-    <div class="vocab-word">${v.word} <span class="vocab-pronounce">(${v.pronounce})</span></div>
-    <div class="vocab-meaning">অর্থ: ${v.meaning}</div>
+    <span class="vocab-word">${v.word} (${v.pronounce})</span> - <span>${v.meaning}</span>
   </div>
 `).join('');
 
-// ২. সেন্টেন্স চেক ও পয়েন্ট যোগ লজিক
-function checkSentence() {
+// ৩. Gemini API দিয়ে সেন্টেন্স চেক ও বাংলা অনুবাদ
+async function checkSentence() {
   const input = document.getElementById('user-sentence').value.trim();
   const feedback = document.getElementById('sentence-feedback');
-  feedback.classList.remove('hidden', 'success', 'error');
+  const apiKey = localStorage.getItem('gemini_api_key');
 
-  if (!input) {
-    feedback.classList.add('error');
-    feedback.innerText = "⚠️ Please write a sentence first!";
+  if (!input || !apiKey) {
+    alert("Please enter API Key and write a sentence!");
     return;
   }
 
-  const textLower = input.toLowerCase();
-  
-  // গ্রামার ভুল সনাক্তকরণ
-  let grammarError = "";
-  if (textLower.includes("want improve") || textLower.includes("want learn")) {
-    grammarError = "Missing 'to' after 'want'. Correct: 'want TO improve'";
-  } else if (textLower.includes("i am agree")) {
-    grammarError = "Say 'I agree' instead of 'I am agree'.";
-  }
+  feedback.classList.remove('hidden');
+  document.getElementById('feedback-grammar').innerText = "Analyzing with AI...";
 
-  if (grammarError) {
-    feedback.classList.add('error');
-    feedback.innerText = "❌ Grammar Error: " + grammarError;
-  } else {
-    // পয়েন্ট হিসাব
-    score += 10;
-    checkedCount += 1;
-    localStorage.setItem('userScore', score);
-    localStorage.setItem('checkedCount', checkedCount);
-    
-    document.getElementById('daily-score').innerText = score;
-    document.getElementById('checked-count').innerText = checkedCount;
+  const prompt = `Act as an English Teacher. Check grammar for: "${input}". 
+  Provide response in JSON format: 
+  {"isCorrect": true/false, "correction": "Grammar feedback here", "banglaTranslation": "Bangla translation"}`;
 
-    feedback.classList.add('success');
-    feedback.innerText = "✓ Excellent sentence! You earned +10 points. 🎉";
-    document.getElementById('user-sentence').value = ""; // বক্স ক্লিয়ার করা
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    const cleanJson = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ''));
+
+    document.getElementById('feedback-grammar').innerText = cleanJson.correction;
+    document.getElementById('feedback-bangla').innerText = "বাংলা অর্থ: " + cleanJson.banglaTranslation;
+    feedback.className = "feedback-box success";
+  } catch (e) {
+    document.getElementById('feedback-grammar').innerText = "Error checking sentence. Check API key.";
   }
 }
 
-// ৩. ভয়েস স্পিকিং এবং ডাইনামিক AI চ্যাটিং
+// ৪. ভয়েস স্পিকিং
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
-
   recognition.onresult = function(event) {
     const transcript = event.results[0][0].transcript;
     document.getElementById('speech-result').innerText = `"${transcript}"`;
-    processAIConversation(transcript);
+    talkToAI(transcript);
   };
 }
 
 function toggleListening() {
-  if (recognition) {
-    recognition.start();
-    document.getElementById('mic-btn').innerText = "🎙️ Listening... Speak now!";
-  } else {
-    alert("Speech recognition is not supported in this browser.");
-  }
+  if (recognition) recognition.start();
 }
 
-function processAIConversation(userText) {
-  document.getElementById('mic-btn').innerText = "🎤 Start Speaking";
-  
-  const textLower = userText.toLowerCase();
-  let correction = "✓ Grammar looks good!";
-  let aiReply = "";
+async function talkToAI(userText) {
+  const apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey) return alert("Please enter Gemini API Key!");
 
-  // ডাইনামিক কনভারসেশন লজিক
-  if (textLower.includes("hello") || textLower.includes("hi")) {
-    aiReply = "Hello Ranjita! How are you doing today? What do you want to practice?";
-  } else if (textLower.includes("how are you")) {
-    aiReply = "I am doing great, thank you! How has your English practice been going?";
-  } else if (textLower.includes("want improve")) {
-    correction = "❌ Correction: Say 'I want TO improve' instead of 'want improve'.";
-    aiReply = "That's a good goal! Daily speaking practice will surely improve your fluency.";
-  } else if (textLower.includes("help me")) {
-    aiReply = "Sure! Ask me any question or practice speaking sentences with me.";
-  } else {
-    aiReply = `That sounds interesting! Tell me more about "${userText}".`;
+  const prompt = `You are an English coach for Ranjita. User said: "${userText}". 
+  Correct grammar errors if any, reply nicely, and ask a follow-up question. 
+  Output JSON format: {"englishReply": "Reply and question", "banglaTranslation": "Bangla translation"}`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    const cleanJson = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ''));
+
+    document.getElementById('ai-reply').innerText = cleanJson.englishReply;
+    document.getElementById('ai-reply-bangla').innerText = cleanJson.banglaTranslation;
+    speakText(cleanJson.englishReply);
+  } catch (e) {
+    document.getElementById('ai-reply').innerText = "API Error. Check Key.";
   }
-
-  document.getElementById('ai-correction').innerText = correction;
-  document.getElementById('ai-reply').innerText = aiReply;
-
-  speakText(aiReply);
 }
 
 function speakText(text) {
@@ -128,14 +105,70 @@ function speakText(text) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
-    utterance.rate = 0.9;
     window.speechSynthesis.speak(utterance);
   }
 }
 
 function speakAIReply() {
-  const replyText = document.getElementById('ai-reply').innerText;
-  if (replyText && replyText !== "AI response will appear here...") {
-    speakText(replyText);
+  speakText(document.getElementById('ai-reply').innerText);
+}
+
+// -------------------------------------------------------------
+// ৫. FRIDAY EXAM SYSTEM (শুক্রবার এক্সাম নেওয়ার বিশেষ লজিক)
+// -------------------------------------------------------------
+const today = new Date();
+const isFriday = today.getDay() === 5; // 5 মানে শুক্রবার
+
+if (isFriday) {
+  document.getElementById('exam-status').innerText = "🎉 Today is Friday! It's Weekly Exam Day. Click below to start.";
+} else {
+  document.getElementById('exam-status').innerText = "Note: Every Friday, AI will generate a test based on your weekly study!";
+}
+
+async function startFridayExam() {
+  const apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey) return alert("Please save your API Key first!");
+
+  document.getElementById('exam-box').classList.remove('hidden');
+  document.getElementById('exam-question').innerText = "AI is generating your Exam Question...";
+
+  const prompt = `Create 1 English translation or sentence-making question for a student using basic vocabulary words like (Improve, Fluency, Confident, Achieve). Keep it simple and clear.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    document.getElementById('exam-question').innerText = "Exam Question: " + data.candidates[0].content.parts[0].text;
+  } catch (e) {
+    document.getElementById('exam-question').innerText = "Failed to load exam. Try again.";
   }
+}
+
+async function submitExamAnswer() {
+  const answer = document.getElementById('exam-answer').value.trim();
+  const question = document.getElementById('exam-question').innerText;
+  const apiKey = localStorage.getItem('gemini_api_key');
+
+  if (!answer) return alert("Write your answer first!");
+
+  document.getElementById('exam-feedback').innerText = "Evaluating your answer...";
+
+  const prompt = `Question was: "${question}". Student Answer: "${answer}". 
+  Evaluate answer, give marks out of 10, and provide friendly feedback in simple English and Bangla.`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    document.getElementById('exam-feedback').innerText = data.candidates[0].content.parts[0].text;
+  } catch (e) {
+    document.getElementById('exam-feedback').innerText = "Error evaluating exam.";
   }
+      }
+  
