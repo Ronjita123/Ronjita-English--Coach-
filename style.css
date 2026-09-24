@@ -5,384 +5,234 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f7f6;
-  color: #222;
-  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f7f6;
+  color: #2c3e50;
+  padding: 20px 10px;
 }
 
-.hero {
-  background: #0f766e;
-  color: white;
+.app-container {
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.header {
   text-align: center;
-  padding: 35px 20px;
+  margin-bottom: 20px;
 }
 
-.hero h1 {
-  font-size: 32px;
-  margin: 10px 0;
-}
-
-.hero p {
-  font-size: 16px;
-}
-
-.day-badge {
-  display: inline-block;
-  background: white;
-  color: #0f766e;
-  padding: 6px 15px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.progress-box {
-  margin: 20px auto 0;
-  max-width: 450px;
-  background: rgba(255,255,255,0.15);
-  padding: 12px;
-  border-radius: 12px;
-}
-
-main {
-  width: 92%;
-  max-width: 750px;
-  margin: 25px auto;
-}
-
-.card {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-  margin-bottom: 22px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.section-title > span {
-  font-size: 35px;
-}
-
-.section-title h2 {
-  color: #0f766e;
-}
-
-.section-title p {
-  color: #777;
-}
-
-.daily-message {
-  margin-top: 20px;
-  background: #f0fdfa;
-  padding: 18px;
-  border-radius: 14px;
-}
-
-.daily-message h3 {
-  color: #0f766e;
-  margin-bottom: 8px;
-}
-
-.section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.section-heading h2,
-.card h2 {
-  color: #0f766e;
-}
-
-.small-label {
-  font-size: 12px;
-  background: #e6fffa;
-  color: #0f766e;
-  padding: 5px 10px;
-  border-radius: 15px;
-}
-
-.vocabulary-item {
-  border: 1px solid #dcebea;
-  border-radius: 14px;
-  padding: 17px;
-  margin-bottom: 12px;
-  background: #fbfffe;
-}
-
-.word-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.word {
-  font-size: 22px;
-  color: #0f766e;
-  font-weight: bold;
-}
-
-.meaning {
-  color: #555;
-  margin: 5px 0;
-}
-
-.example {
-  background: #f0fdfa;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
-  font-size: 14px;
-}
-
-.use-word-button {
-  margin-top: 10px;
-  background: #e6fffa;
-  color: #0f766e;
-  border: 1px solid #0f766e;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-
-.instruction {
-  color: #666;
-  margin: 8px 0 15px;
-}
-
-.selected-word {
-  background: #f0fdfa;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-
-.selected-word strong {
-  color: #0f766e;
-}
-
-textarea,
-#messageInput {
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 12px;
-  font-size: 15px;
-  font-family: Arial, sans-serif;
-}
-
-textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-.primary-button,
-.secondary-button,
-.complete-button,
-.mic-button,
-.send-button {
-  border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 12px;
-}
-
-.primary-button,
-.send-button {
-  background: #0f766e;
-  color: white;
-}
-
-.secondary-button {
-  background: #e6fffa;
-  color: #0f766e;
-}
-
-.mic-button {
-  background: #0f766e;
-  color: white;
-  width: 100%;
-  font-size: 17px;
-}
-
-.mic-button.listening {
-  background: #b91c1c;
-}
-
-.complete-button {
-  width: 100%;
-  background: #0f766e;
-  color: white;
-  font-size: 16px;
-}
-
-.complete-button:disabled {
-  background: #999;
-  cursor: not-allowed;
-}
-
-.speaking-status {
-  margin-top: 12px;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  text-align: center;
-  color: #666;
-}
-
-.speech-result {
-  margin-top: 15px;
-  background: #f0fdfa;
-  padding: 15px;
-  border-radius: 12px;
-}
-
-.speech-result h3 {
-  color: #0f766e;
+.header h1 {
+  font-size: 1.5rem;
+  color: #0d5c46;
   margin-bottom: 5px;
 }
 
-.chat-box {
-  background: #f0fdfa;
-  border-radius: 12px;
-  padding: 15px;
-  min-height: 150px;
-  margin: 15px 0;
-  max-height: 350px;
-  overflow-y: auto;
+#motivational-quote {
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #666;
 }
 
-.coach-message,
-.user-message {
-  padding: 10px 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eef2f5;
 }
 
-.coach-message {
-  background: white;
-}
-
-.user-message {
-  background: #dff7f3;
-  text-align: right;
-}
-
-.input-area {
+.card-header {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.input-area #messageInput {
-  flex: 1;
+.card-header .icon {
+  font-size: 1.3rem;
+  margin-right: 8px;
 }
 
-.input-area .send-button {
-  margin-top: 0;
+.card-header h2 {
+  font-size: 1.15rem;
+  color: #0d5c46;
+  font-weight: 600;
 }
 
-.goal-item {
-  background: #f8faf9;
+.instruction {
+  font-size: 0.88rem;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* Vocab Box */
+.vocab-box {
+  background-color: #e8f5e9;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 5px solid #2e7d32;
+}
+
+.vocab-box h3 {
+  font-size: 1.2rem;
+  color: #1b5e20;
+}
+
+.vocab-box p {
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.example-text {
+  font-style: italic;
+  color: #444;
+  margin-top: 8px !important;
+}
+
+/* Inputs & Textarea */
+textarea {
+  width: 100%;
+  height: 90px;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
   padding: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  resize: none;
+  transition: border-color 0.3s;
+}
+
+textarea:focus {
+  border-color: #0d5c46;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
   border-radius: 10px;
-  margin: 8px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-#sentenceResult,
-#completionMessage {
-  margin-top: 15px;
-  font-weight: bold;
+.btn:active {
+  transform: scale(0.98);
 }
 
-.success {
-  color: #15803d;
+.btn-primary {
+  background-color: #0d5c46;
+  color: white;
 }
 
-.error {
-  color: #b91c1c;
+.btn-primary:hover {
+  background-color: #094232;
 }
 
-.stats {
-  display: flex;
-  gap: 12px;
-  margin-top: 18px;
+.btn-speak {
+  background-color: #1565c0;
+  color: white;
 }
 
-.stat {
-  flex: 1;
-  background: #f0fdfa;
-  padding: 15px;
-  border-radius: 12px;
-  text-align: center;
+.btn-speak:hover {
+  background-color: #0d47a1;
 }
 
-.stat strong {
+.btn-secondary {
+  background-color: #eceff1;
+  color: #37474f;
+}
+
+/* Feedback & Chat */
+.feedback-box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.feedback-box.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.feedback-box.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.hidden {
+  display: none;
+}
+
+.chat-container {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.chat-row {
+  margin-bottom: 10px;
+}
+
+.chat-row:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #777;
   display: block;
-  font-size: 25px;
-  color: #0f766e;
+  margin-bottom: 2px;
 }
 
-.stat span {
-  font-size: 12px;
-  color: #666;
+.chat-bubble {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  line-height: 1.35;
 }
 
-.creator {
-  border-left: 5px solid #0f766e;
+.user-bubble {
+  background-color: #e3f2fd;
+  color: #0d47a1;
 }
 
-.creator p {
-  margin: 8px 0;
+.correction-bubble {
+  background-color: #fff3e0;
+  color: #e65100;
 }
 
-footer {
-  text-align: center;
-  padding: 25px;
-  color: #666;
-  font-size: 14px;
+.ai-bubble {
+  background-color: #e8f5e9;
+  color: #1b5e20;
 }
 
-@media (max-width: 600px) {
+/* Checklist Goals */
+.goal-list {
+  list-style: none;
+}
 
-  .hero h1 {
-    font-size: 25px;
-  }
+.goal-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.92rem;
+}
 
-  main {
-    width: 94%;
+.goal-list input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  accent-color: #0d5c46;
   }
-
-  .section-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .input-area {
-    flex-direction: column;
-  }
-
-  .input-area #messageInput,
-  .input-area .send-button {
-    width: 100%;
-  }
-
-  .stats {
-    flex-direction: column;
-  }
-
-  .word-top {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  }
+  
