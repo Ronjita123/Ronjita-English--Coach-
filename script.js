@@ -1,543 +1,219 @@
-// ============================================================
-// RONJITA'S AI ENGLISH COACH
-// ============================================================
-//
-// Website:
-// GitHub Pages
-//
-// AI:
-// GitHub Pages
-//      ↓
-// Cloudflare Worker
-//      ↓
-// Gemini API
-//
-// IMPORTANT:
-// Gemini API key is NOT stored in this file.
-// ============================================================
+const AI_API_URL = "https://still-scene-e8cf.mstronjitaakter.workers.dev";
 
+const $ = (id) => document.getElementById(id);
 
-const AI_API_URL =
-  "https://still-scene-e8cf.mstronjitaakter.workers.dev";
+const speakBtn = $("speakBtn");
+const sendBtn = $("sendBtn");
+const clearBtn = $("clearBtn");
+const userText = $("userText");
+const status = $("status");
+const aiReply = $("aiReply");
+const correction = $("correction");
+const question = $("question");
 
+const conversationCount = $("conversationCount");
+const correctionCount = $("correctionCount");
+const vocabularyCount = $("vocabularyCount");
+const examScore = $("examScore");
 
-// ============================================================
-// ELEMENTS
-// ============================================================
+const WORDS_KEY = "ronjita_english_vocabulary_v1";
+const STATS_KEY = "ronjita_english_stats_v1";
 
-const speakBtn =
-  document.getElementById("speakBtn");
-
-const sendBtn =
-  document.getElementById("sendBtn");
-
-const clearBtn =
-  document.getElementById("clearBtn");
-
-const userText =
-  document.getElementById("userText");
-
-const status =
-  document.getElementById("status");
-
-const aiReply =
-  document.getElementById("aiReply");
-
-const correction =
-  document.getElementById("correction");
-
-const question =
-  document.getElementById("question");
-
-const conversationCount =
-  document.getElementById("conversationCount");
-
-const correctionCount =
-  document.getElementById("correctionCount");
-
-const vocabularyCount =
-  document.getElementById("vocabularyCount");
-
-const examScore =
-  document.getElementById("examScore");
-
-
-// ============================================================
-// LOCAL STORAGE KEYS
-// ============================================================
-
-const WORDS_KEY =
-  "ronjita_english_vocabulary_v1";
-
-const STATS_KEY =
-  "ronjita_english_stats_v1";
-
-
-// ============================================================
-// LOAD SAVED DATA
-// ============================================================
-
-let words =
-  loadWords();
-
-let stats =
-  loadStats();
-
-
-// ============================================================
-// LOAD VOCABULARY
-// ============================================================
+let words = loadWords();
+let stats = loadStats();
 
 function loadWords() {
-
   try {
-
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          WORDS_KEY
-        )
-      );
-
-    if (Array.isArray(saved)) {
-
-      return saved;
-
-    }
-
+    const data = JSON.parse(localStorage.getItem(WORDS_KEY));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
   }
-
-  catch (error) {
-
-    console.log(
-      "Vocabulary loading error:",
-      error
-    );
-
-  }
-
-  return [];
-
 }
-
-
-// ============================================================
-// SAVE VOCABULARY
-// ============================================================
 
 function saveWords() {
-
-  localStorage.setItem(
-    WORDS_KEY,
-    JSON.stringify(words)
-  );
-
+  localStorage.setItem(WORDS_KEY, JSON.stringify(words));
   updateStats();
-
   renderVocabulary();
-
 }
-
-
-// ============================================================
-// LOAD STATISTICS
-// ============================================================
 
 function loadStats() {
-
   try {
+    const data = JSON.parse(localStorage.getItem(STATS_KEY));
 
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          STATS_KEY
-        )
-      );
-
-    if (
-      saved &&
-      typeof saved === "object"
-    ) {
-
-      return saved;
-
-    }
-
+    return data && typeof data === "object"
+      ? data
+      : {
+          conversations: 0,
+          corrections: 0,
+          lastExam: null
+        };
+  } catch {
+    return {
+      conversations: 0,
+      corrections: 0,
+      lastExam: null
+    };
   }
-
-  catch (error) {
-
-    console.log(
-      "Stats loading error:",
-      error
-    );
-
-  }
-
-  return {
-
-    conversations: 0,
-
-    corrections: 0,
-
-    lastExam: null
-
-  };
-
 }
-
-
-// ============================================================
-// SAVE STATISTICS
-// ============================================================
 
 function saveStats() {
-
-  localStorage.setItem(
-    STATS_KEY,
-    JSON.stringify(stats)
-  );
-
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
   updateStats();
-
 }
-
-
-// ============================================================
-// UPDATE STATISTICS
-// ============================================================
 
 function updateStats() {
-
-  conversationCount.textContent =
-    stats.conversations || 0;
-
-  correctionCount.textContent =
-    stats.corrections || 0;
-
-  vocabularyCount.textContent =
-    words.length;
-
-  if (
-    stats.lastExam === null ||
-    stats.lastExam === undefined
-  ) {
-
-    examScore.textContent =
-      "—";
-
+  if (conversationCount) {
+    conversationCount.textContent = stats.conversations || 0;
   }
 
-  else {
-
-    examScore.textContent =
-      stats.lastExam + "%";
-
+  if (correctionCount) {
+    correctionCount.textContent = stats.corrections || 0;
   }
 
+  if (vocabularyCount) {
+    vocabularyCount.textContent = words.length;
+  }
+
+  if (examScore) {
+    examScore.textContent =
+      stats.lastExam == null ? "—" : `${stats.lastExam}%`;
+  }
 }
 
 
-// ============================================================
-// INITIAL STATISTICS
-// ============================================================
+/* ============================================================
+   TAB SYSTEM
+============================================================ */
 
-updateStats();
+document.querySelectorAll(".tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
 
+    document
+      .querySelectorAll(".tab")
+      .forEach((t) => t.classList.remove("active"));
 
-// ============================================================
-// TAB SYSTEM
-// ============================================================
+    document
+      .querySelectorAll(".tab-panel")
+      .forEach((p) => p.classList.remove("active"));
 
-const tabs =
-  document.querySelectorAll(
-    ".tab"
-  );
+    tab.classList.add("active");
 
-const panels =
-  document.querySelectorAll(
-    ".tab-panel"
-  );
+    const panel = $(tab.dataset.tab);
 
-
-tabs.forEach(
-  function (button) {
-
-    button.addEventListener(
-      "click",
-      function () {
-
-        tabs.forEach(
-          function (tab) {
-
-            tab.classList.remove(
-              "active"
-            );
-
-          }
-        );
+    if (panel) {
+      panel.classList.add("active");
+    }
+  });
+});
 
 
-        panels.forEach(
-          function (panel) {
-
-            panel.classList.remove(
-              "active"
-            );
-
-          }
-        );
-
-
-        button.classList.add(
-          "active"
-        );
-
-
-        const target =
-          document.getElementById(
-            button.dataset.tab
-          );
-
-
-        if (target) {
-
-          target.classList.add(
-            "active"
-          );
-
-        }
-
-      }
-    );
-
-  }
-);
-
-
-// ============================================================
-// SPEECH RECOGNITION
-// ============================================================
+/* ============================================================
+   SPEECH RECOGNITION
+============================================================ */
 
 const SpeechRecognition =
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
 
+let recognition = null;
 
-let recognition =
-  null;
+if (SpeechRecognition && speakBtn) {
 
+  recognition = new SpeechRecognition();
 
-if (SpeechRecognition) {
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.continuous = false;
 
-  recognition =
-    new SpeechRecognition();
+  recognition.onstart = () => {
 
-
-  recognition.lang =
-    "en-US";
-
-
-  recognition.interimResults =
-    false;
-
-
-  recognition.continuous =
-    false;
-
-
-  recognition.onstart =
-    function () {
-
-      status.textContent =
-        "🎤 Listening... Speak now.";
-
-      speakBtn.disabled =
-        true;
-
-    };
-
-
-  recognition.onresult =
-    function (event) {
-
-      const spokenText =
-        event.results[0][0].transcript;
-
-
-      userText.value =
-        spokenText;
-
-
-      status.textContent =
-        "✅ I heard you! Press Send to AI.";
-
-    };
-
-
-  recognition.onerror =
-    function (event) {
-
-      status.textContent =
-        "❌ Microphone error: " +
-        event.error;
-
-    };
-
-
-  recognition.onend =
-    function () {
-
-      speakBtn.disabled =
-        false;
-
-    };
-
-}
-
-else {
-
-  speakBtn.disabled =
-    true;
-
-
-  status.textContent =
-    "Speech recognition is not supported in this browser.";
-
-}
-
-
-// ============================================================
-// START MICROPHONE
-// ============================================================
-
-speakBtn.addEventListener(
-  "click",
-  function () {
-
-    if (!recognition) {
-
-      return;
-
+    if (status) {
+      status.textContent = "🎤 Listening... Speak now.";
     }
 
+    speakBtn.disabled = true;
+  };
+
+  recognition.onresult = (event) => {
+
+    userText.value =
+      event.results[0][0].transcript;
+
+    if (status) {
+      status.textContent =
+        "✅ I heard you! Press Send to AI.";
+    }
+  };
+
+  recognition.onerror = (event) => {
+
+    if (status) {
+      status.textContent =
+        `❌ Microphone error: ${event.error}`;
+    }
+  };
+
+  recognition.onend = () => {
+
+    speakBtn.disabled = false;
+  };
+
+  speakBtn.addEventListener("click", () => {
 
     try {
 
       recognition.start();
 
+    } catch {
+
+      if (status) {
+        status.textContent =
+          "Microphone is already listening.";
+      }
     }
+  });
 
-    catch (error) {
+} else if (speakBtn) {
 
-      status.textContent =
-        "Microphone is already listening.";
+  speakBtn.disabled = true;
 
-    }
-
-  }
-);
-
-
-// ============================================================
-// CLEAR AI CONVERSATION
-// ============================================================
-
-clearBtn.addEventListener(
-  "click",
-  function () {
-
-    userText.value =
-      "";
-
-
-    aiReply.textContent =
-      "Your AI reply will appear here.";
-
-
-    correction.textContent =
-      "Your grammar correction will appear here.";
-
-
-    question.textContent =
-      "Your next question will appear here.";
-
-
+  if (status) {
     status.textContent =
-      "Ready.";
-
+      "Speech recognition is not supported in this browser.";
   }
-);
+}
 
 
-// ============================================================
-// AI JSON READER
-// ============================================================
+/* ============================================================
+   AI JSON READER
+============================================================ */
 
 function parseAIJson(raw) {
 
-  if (
-    typeof raw !==
-    "string"
-  ) {
-
-    throw new Error(
-      "AI returned no text."
-    );
-
+  if (typeof raw !== "string") {
+    throw new Error("AI returned no text.");
   }
 
-
   let cleaned =
-    raw.trim();
-
-
-  cleaned =
-    cleaned.replace(
-      /^```json\s*/i,
-      ""
-    );
-
-
-  cleaned =
-    cleaned.replace(
-      /^```\s*/i,
-      ""
-    );
-
-
-  cleaned =
-    cleaned.replace(
-      /\s*```$/i,
-      ""
-    );
-
-
-  cleaned =
-    cleaned.trim();
-
+    raw
+      .trim()
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
 
   try {
 
-    return JSON.parse(
-      cleaned
-    );
+    return JSON.parse(cleaned);
 
-  }
-
-  catch (error) {
+  } catch {
 
     const start =
-      cleaned.indexOf(
-        "{"
-      );
-
+      cleaned.indexOf("{");
 
     const end =
-      cleaned.lastIndexOf(
-        "}"
-      );
-
+      cleaned.lastIndexOf("}");
 
     if (
       start !== -1 &&
@@ -545,83 +221,53 @@ function parseAIJson(raw) {
     ) {
 
       return JSON.parse(
-        cleaned.substring(
-          start,
-          end + 1
-        )
+        cleaned.slice(start, end + 1)
       );
-
     }
-
 
     throw new Error(
       "AI response was not valid JSON."
     );
-
   }
-
 }
 
 
-// ============================================================
-// SEND REQUEST TO CLOUDFLARE WORKER
-// ============================================================
+/* ============================================================
+   ASK AI
+============================================================ */
 
-async function askAI(
-  prompt
-) {
+async function askAI(prompt) {
 
   const response =
     await fetch(
       AI_API_URL,
       {
+        method: "POST",
 
-        method:
-          "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-        headers:
-          {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-        body:
-          JSON.stringify(
-            {
-
-              action:
-                "generate",
-
-              message:
-                prompt
-
-            }
-          )
-
+        body: JSON.stringify({
+          action: "generate",
+          message: prompt
+        })
       }
     );
 
-
   let data;
-
 
   try {
 
     data =
       await response.json();
 
-  }
-
-  catch (error) {
+  } catch {
 
     throw new Error(
       "Worker did not return valid JSON."
     );
-
   }
-
 
   if (
     !response.ok ||
@@ -632,54 +278,105 @@ async function askAI(
       data.error ||
       "AI request failed."
     );
-
   }
 
-
   return data.text;
-
 }
 
 
-// ============================================================
-// AI CONVERSATION
-// ============================================================
+/* ============================================================
+   SPEAK AI REPLY
+============================================================ */
 
-sendBtn.addEventListener(
-  "click",
-  async function () {
+function speakText(text) {
 
-    const text =
-      userText.value.trim();
+  if (
+    !text ||
+    !("speechSynthesis" in window)
+  ) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance =
+    new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  window.speechSynthesis.speak(
+    utterance
+  );
+}
 
 
-    if (!text) {
+/* ============================================================
+   CLEAR AI
+============================================================ */
 
-      alert(
-        "Please speak or type something first."
-      );
+if (clearBtn) {
 
-      return;
+  clearBtn.addEventListener(
+    "click",
+    () => {
 
+      userText.value = "";
+
+      aiReply.textContent =
+        "Your AI reply will appear here.";
+
+      correction.textContent =
+        "Your grammar correction will appear here.";
+
+      question.textContent =
+        "Your next question will appear here.";
+
+      if (status) {
+        status.textContent = "Ready.";
+      }
     }
+  );
+}
 
 
-    sendBtn.disabled =
-      true;
+/* ============================================================
+   AI CONVERSATION
+============================================================ */
 
+if (sendBtn) {
 
-    status.textContent =
-      "🤖 AI is thinking...";
+  sendBtn.addEventListener(
+    "click",
+    async () => {
 
+      const text =
+        userText.value.trim();
 
-    const prompt = `
+      if (!text) {
+
+        alert(
+          "Please speak or type something first."
+        );
+
+        return;
+      }
+
+      sendBtn.disabled = true;
+
+      if (status) {
+        status.textContent =
+          "🤖 AI is thinking...";
+      }
+
+      const prompt = `
 
 You are Ronjita's English learning AI coach.
 
 The student said:
 
 ${JSON.stringify(text)}
-
 
 Return ONLY valid JSON.
 
@@ -690,7 +387,6 @@ Use exactly this format:
   "correction": "Brief grammar correction. If there is no important mistake, say: Your sentence is correct.",
   "question": "One simple follow-up question in English."
 }
-
 
 Rules:
 
@@ -703,597 +399,389 @@ Rules:
 
 `;
 
+      try {
 
-    try {
+        const raw =
+          await askAI(prompt);
 
-      const raw =
-        await askAI(
-          prompt
-        );
+        const result =
+          parseAIJson(raw);
 
+        aiReply.textContent =
+          result.reply ||
+          "No reply received.";
 
-      const result =
-        parseAIJson(
-          raw
-        );
-
-
-      aiReply.textContent =
-        result.reply ||
-        "No reply received.";
-
-
-      correction.textContent =
-        result.correction ||
-        "No correction available.";
-
-
-      question.textContent =
-        result.question ||
-        "What would you like to talk about?";
-
-
-      stats.conversations =
-        (stats.conversations || 0) + 1;
-
-
-      const correctionText =
-        String(
+        correction.textContent =
           result.correction ||
-          ""
-        ).toLowerCase();
+          "No correction available.";
 
+        question.textContent =
+          result.question ||
+          "What would you like to talk about?";
 
-      if (
-        correctionText &&
-        !correctionText.includes(
-          "your sentence is correct"
-        ) &&
-        !correctionText.includes(
-          "no mistake"
-        ) &&
-        !correctionText.includes(
-          "no error"
-        )
-      ) {
+        stats.conversations =
+          (stats.conversations || 0) + 1;
 
-        stats.corrections =
-          (stats.corrections || 0) + 1;
+        const correctionText =
+          String(
+            result.correction || ""
+          ).toLowerCase();
 
+        if (
+          correctionText &&
+          !correctionText.includes(
+            "your sentence is correct"
+          ) &&
+          !correctionText.includes(
+            "no mistake"
+          ) &&
+          !correctionText.includes(
+            "no error"
+          )
+        ) {
+
+          stats.corrections =
+            (stats.corrections || 0) + 1;
+        }
+
+        saveStats();
+
+        if (status) {
+          status.textContent =
+            "✅ AI replied!";
+        }
+
+        speakText(
+          result.reply || ""
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        if (status) {
+          status.textContent =
+            `❌ AI connection failed: ${error.message}`;
+        }
+
+        aiReply.textContent =
+          "The AI could not reply right now.";
+
+        correction.textContent =
+          "Please check the Cloudflare Worker connection.";
+
+        question.textContent = "";
+
+      } finally {
+
+        sendBtn.disabled = false;
       }
-
-
-      saveStats();
-
-
-      status.textContent =
-        "✅ AI replied!";
-
-
-      speakText(
-        result.reply ||
-        ""
-      );
-
     }
-
-
-    catch (error) {
-
-      console.error(
-        error
-      );
-
-
-      status.textContent =
-        "❌ AI connection failed: " +
-        error.message;
-
-
-      aiReply.textContent =
-        "The AI could not reply right now.";
-
-
-      correction.textContent =
-        "Please check the Cloudflare Worker connection.";
-
-
-      question.textContent =
-        "";
-
-    }
-
-
-    finally {
-
-      sendBtn.disabled =
-        false;
-
-    }
-
-  }
-);
-
-
-// ============================================================
-// AI VOICE
-// ============================================================
-
-function speakText(
-  text
-) {
-
-  if (
-    !("speechSynthesis" in window)
-  ) {
-
-    return;
-
-  }
-
-
-  if (!text) {
-
-    return;
-
-  }
-
-
-  window.speechSynthesis.cancel();
-
-
-  const speech =
-    new SpeechSynthesisUtterance(
-      text
-    );
-
-
-  speech.lang =
-    "en-US";
-
-
-  speech.rate =
-    0.9;
-
-
-  speech.pitch =
-    1;
-
-
-  window.speechSynthesis.speak(
-    speech
   );
-
 }
 
 
-// ============================================================
-// VOCABULARY
-// ============================================================
+/* ============================================================
+   VOCABULARY ELEMENTS
+============================================================ */
 
 const vocabForm =
-  document.getElementById(
-    "vocabForm"
-  );
-
+  $("vocabForm");
 
 const wordInput =
-  document.getElementById(
-    "wordInput"
-  );
-
+  $("wordInput");
 
 const meaningInput =
-  document.getElementById(
-    "meaningInput"
-  );
-
+  $("meaningInput");
 
 const exampleInput =
-  document.getElementById(
-    "exampleInput"
-  );
-
+  $("exampleInput");
 
 const vocabSearch =
-  document.getElementById(
-    "vocabSearch"
-  );
-
+  $("vocabSearch");
 
 const vocabList =
-  document.getElementById(
-    "vocabList"
-  );
-
+  $("vocabList");
 
 const clearVocabBtn =
-  document.getElementById(
-    "clearVocabBtn"
-  );
+  $("clearVocabBtn");
 
 
-// ============================================================
-// ADD VOCABULARY
-// ============================================================
-
-vocabForm.addEventListener(
-  "submit",
-  function (event) {
-
-    event.preventDefault();
-
-
-    const word =
-      wordInput.value.trim();
-
-
-    const meaning =
-      meaningInput.value.trim();
-
-
-    const example =
-      exampleInput.value.trim();
-
-
-    if (
-      !word ||
-      !meaning
-    ) {
-
-      return;
-
-    }
-
-
-    const newWord = {
-
-      id:
-        Date.now(),
-
-      word:
-        word,
-
-      meaning:
-        meaning,
-
-      example:
-        example
-
-    };
-
-
-    words.unshift(
-      newWord
-    );
-
-
-    saveWords();
-
-
-    vocabForm.reset();
-
-
-    wordInput.focus();
-
-  }
-);
-
-
-// ============================================================
-// SEARCH VOCABULARY
-// ============================================================
-
-vocabSearch.addEventListener(
-  "input",
-  function () {
-
-    renderVocabulary();
-
-  }
-);
-
-
-// ============================================================
-// DELETE ALL VOCABULARY
-// ============================================================
-
-clearVocabBtn.addEventListener(
-  "click",
-  function () {
-
-    if (
-      words.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    const confirmed =
-      confirm(
-        "Delete all saved vocabulary from this device?"
-      );
-
-
-    if (!confirmed) {
-
-      return;
-
-    }
-
-
-    words =
-      [];
-
-
-    saveWords();
-
-  }
-);
-
-
-// ============================================================
-// DISPLAY VOCABULARY
-// ============================================================
+/* ============================================================
+   DISPLAY VOCABULARY
+============================================================ */
 
 function renderVocabulary() {
 
+  if (!vocabList) {
+    return;
+  }
+
   const search =
-    vocabSearch.value
+    (vocabSearch?.value || "")
       .trim()
       .toLowerCase();
 
-
   const filtered =
     words.filter(
-      function (item) {
+      (item) =>
 
-        return (
+        String(item.word || "")
+          .toLowerCase()
+          .includes(search)
 
-          item.word
-            .toLowerCase()
-            .includes(search)
+        ||
 
-          ||
+        String(item.meaning || "")
+          .toLowerCase()
+          .includes(search)
 
-          item.meaning
-            .toLowerCase()
-            .includes(search)
+        ||
 
-          ||
-
-          item.example
-            .toLowerCase()
-            .includes(search)
-
-        );
-
-      }
+        String(item.example || "")
+          .toLowerCase()
+          .includes(search)
     );
 
+  vocabList.innerHTML = "";
 
-  if (
-    filtered.length === 0
-  ) {
+  if (!filtered.length) {
 
     vocabList.innerHTML =
-      "<p class='muted'>" +
-      "No vocabulary found. " +
-      "Add your first word above." +
-      "</p>";
+      "<p class='muted'>No vocabulary found. Add your first word above.</p>";
 
     return;
-
   }
 
-
-  vocabList.innerHTML =
-    "";
-
-
   filtered.forEach(
-    function (item) {
+    (item) => {
 
       const card =
         document.createElement(
           "article"
         );
 
-
       card.className =
         "word-card";
-
 
       const word =
         document.createElement(
           "div"
         );
 
-
       word.className =
         "word";
 
-
       word.textContent =
         item.word;
-
 
       const meaning =
         document.createElement(
           "div"
         );
 
-
       meaning.className =
         "meaning";
 
-
       meaning.textContent =
         item.meaning;
-
 
       const example =
         document.createElement(
           "div"
         );
 
-
       example.className =
         "example";
-
 
       if (item.example) {
 
         example.textContent =
-          "Example: " +
-          item.example;
-
+          `Example: ${item.example}`;
       }
-
 
       const deleteButton =
         document.createElement(
           "button"
         );
 
-
       deleteButton.className =
         "danger delete-word";
-
 
       deleteButton.textContent =
         "Delete";
 
-
       deleteButton.addEventListener(
         "click",
-        function () {
+        () => {
 
           words =
             words.filter(
-              function (wordItem) {
-
-                return (
-                  wordItem.id !==
-                  item.id
-                );
-
-              }
+              (w) =>
+                w.id !== item.id
             );
 
-
           saveWords();
-
         }
       );
 
+      card.appendChild(word);
+      card.appendChild(meaning);
+      card.appendChild(example);
+      card.appendChild(deleteButton);
 
-      card.appendChild(
-        word
-      );
-
-
-      card.appendChild(
-        meaning
-      );
-
-
-      card.appendChild(
-        example
-      );
-
-
-      card.appendChild(
-        deleteButton
-      );
-
-
-      vocabList.appendChild(
-        card
-      );
-
+      vocabList.appendChild(card);
     }
   );
-
 }
 
 
-// ============================================================
-// INITIAL VOCABULARY DISPLAY
-// ============================================================
+/* ============================================================
+   ADD VOCABULARY
+============================================================ */
 
-renderVocabulary();
+if (vocabForm) {
+
+  vocabForm.addEventListener(
+    "submit",
+    (event) => {
+
+      event.preventDefault();
+
+      const word =
+        wordInput.value.trim();
+
+      const meaning =
+        meaningInput.value.trim();
+
+      const example =
+        exampleInput.value.trim();
+
+      if (
+        !word ||
+        !meaning
+      ) {
+
+        return;
+      }
+
+      words.unshift({
+
+        id:
+          Date.now(),
+
+        word:
+          word,
+
+        meaning:
+          meaning,
+
+        example:
+          example
+      });
+
+      saveWords();
+
+      vocabForm.reset();
+
+      wordInput.focus();
+    }
+  );
+}
 
 
-// ============================================================
-// SENTENCE CHECKER
-// ============================================================
+/* ============================================================
+   SEARCH VOCABULARY
+============================================================ */
+
+if (vocabSearch) {
+
+  vocabSearch.addEventListener(
+    "input",
+    renderVocabulary
+  );
+}
+
+
+/* ============================================================
+   DELETE ALL VOCABULARY
+============================================================ */
+
+if (clearVocabBtn) {
+
+  clearVocabBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!words.length) {
+        return;
+      }
+
+      const confirmed =
+        confirm(
+          "Delete all saved vocabulary from this device?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      words = [];
+
+      saveWords();
+    }
+  );
+}
+
+
+/* ============================================================
+   SENTENCE CHECKER
+============================================================ */
 
 const sentenceInput =
-  document.getElementById(
-    "sentenceInput"
-  );
-
+  $("sentenceInput");
 
 const checkSentenceBtn =
-  document.getElementById(
-    "checkSentenceBtn"
-  );
-
+  $("checkSentenceBtn");
 
 const clearSentenceBtn =
-  document.getElementById(
-    "clearSentenceBtn"
-  );
-
+  $("clearSentenceBtn");
 
 const sentenceResult =
-  document.getElementById(
-    "sentenceResult"
-  );
+  $("sentenceResult");
 
 
-// ============================================================
-// CHECK SENTENCE
-// ============================================================
+if (checkSentenceBtn) {
 
-checkSentenceBtn.addEventListener(
-  "click",
-  async function () {
+  checkSentenceBtn.addEventListener(
+    "click",
+    async () => {
 
-    const text =
-      sentenceInput.value.trim();
+      const text =
+        sentenceInput.value.trim();
 
+      if (!text) {
 
-    if (!text) {
+        alert(
+          "Please write an English sentence first."
+        );
 
-      alert(
-        "Please write an English sentence first."
-      );
+        return;
+      }
 
-      return;
+      checkSentenceBtn.disabled =
+        true;
 
-    }
+      sentenceResult.textContent =
+        "🤖 Checking your sentence...";
 
-
-    checkSentenceBtn.disabled =
-      true;
-
-
-    sentenceResult.textContent =
-      "🤖 Checking your sentence...";
-
-
-    const prompt = `
+      const prompt = `
 
 You are an English grammar teacher.
 
 Check this student's sentence:
 
 ${JSON.stringify(text)}
-
 
 Return ONLY valid JSON.
 
@@ -1305,7 +793,6 @@ Use exactly this format:
   "explanation": "A short and easy explanation for the student."
 }
 
-
 Rules:
 
 - Do not use Markdown.
@@ -1314,107 +801,339 @@ Rules:
 
 `;
 
+      try {
 
-    try {
+        const raw =
+          await askAI(prompt);
 
-      const raw =
-        await askAI(
-          prompt
-        );
+        const result =
+          parseAIJson(raw);
+
+        sentenceResult.textContent =
+
+          "Original: " +
+          (
+            result.original ||
+            text
+          )
+
+          +
+
+          "\n\nCorrected: " +
+          (
+            result.corrected ||
+            text
+          )
+
+          +
+
+          "\n\nExplanation: " +
+          (
+            result.explanation ||
+            "No explanation."
+          );
+
+      } catch (error) {
+
+        sentenceResult.textContent =
+          `❌ ${error.message}`;
+
+      } finally {
+
+        checkSentenceBtn.disabled =
+          false;
+      }
+    }
+  );
+}
 
 
-      const result =
-        parseAIJson(
-          raw
-        );
+/* ============================================================
+   CLEAR SENTENCE
+============================================================ */
 
+if (clearSentenceBtn) {
+
+  clearSentenceBtn.addEventListener(
+    "click",
+    () => {
+
+      sentenceInput.value = "";
 
       sentenceResult.textContent =
+        "Your result will appear here.";
+    }
+  );
+}
 
-        "Original: " +
-        (
-          result.original ||
-          text
-        )
 
-        +
+/* ============================================================
+   WEEKLY EXAM
+============================================================ */
 
-        "\n\nCorrected: " +
-        (
-          result.corrected ||
-          text
-        )
+const startExamBtn =
+  $("startExamBtn");
 
-        +
+const examProgress =
+  $("examProgress");
 
-        "\n\nExplanation: " +
-        (
-          result.explanation ||
-          "No explanation."
+const examArea =
+  $("examArea");
+
+const examQuestion =
+  $("examQuestion");
+
+const examOptions =
+  $("examOptions");
+
+const nextExamBtn =
+  $("nextExamBtn");
+
+const examResult =
+  $("examResult");
+
+let examQuestions = [];
+
+let examIndex = 0;
+
+let examCorrect = 0;
+
+let examAnswered = false;
+
+
+/* ============================================================
+   SHUFFLE
+============================================================ */
+
+function shuffle(array) {
+
+  return [...array].sort(
+    () => Math.random() - 0.5
+  );
+}
+
+
+/* ============================================================
+   START EXAM
+============================================================ */
+
+function startExam() {
+
+  if (words.length < 5) {
+
+    if (examResult) {
+
+      examResult.textContent =
+        "📚 Please save at least 5 vocabulary words before starting the exam.";
+    }
+
+    if (examArea) {
+      examArea.hidden = true;
+    }
+
+    return;
+  }
+
+  const selected =
+    shuffle(words).slice(
+      0,
+      Math.min(10, words.length)
+    );
+
+  examQuestions =
+    selected.map(
+      (item) => {
+
+        const otherWords =
+          shuffle(
+            words.filter(
+              (w) =>
+                w.id !== item.id
+            )
+          ).slice(0, 2);
+
+        const options =
+          shuffle([
+            item.meaning,
+            ...otherWords.map(
+              (w) =>
+                w.meaning
+            )
+          ]);
+
+        return {
+
+          word:
+            item.word,
+
+          answer:
+            item.meaning,
+
+          options:
+            options
+        };
+      }
+    );
+
+  examIndex = 0;
+
+  examCorrect = 0;
+
+  examAnswered = false;
+
+  if (examResult) {
+    examResult.textContent = "";
+  }
+
+  if (examArea) {
+    examArea.hidden = false;
+  }
+
+  showExamQuestion();
+}
+
+
+/* ============================================================
+   SHOW EXAM QUESTION
+============================================================ */
+
+function showExamQuestion() {
+
+  const current =
+    examQuestions[examIndex];
+
+  if (!current) {
+    return;
+  }
+
+  examAnswered = false;
+
+  if (examProgress) {
+
+    examProgress.textContent =
+      `Question ${examIndex + 1} of ${examQuestions.length}`;
+  }
+
+  if (examQuestion) {
+
+    examQuestion.textContent =
+      `What is the meaning of: ${current.word}?`;
+  }
+
+  if (examOptions) {
+
+    examOptions.innerHTML = "";
+
+    current.options.forEach(
+      (option) => {
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.type =
+          "button";
+
+        button.className =
+          "exam-option";
+
+        button.textContent =
+          option;
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            if (examAnswered) {
+              return;
+            }
+
+            examAnswered = true;
+
+            if (
+              option ===
+              current.answer
+            ) {
+
+              examCorrect++;
+
+              button.classList.add(
+                "correct"
+              );
+
+            } else {
+
+              button.classList.add(
+                "wrong"
+              );
+
+              [
+                ...examOptions.children
+              ].forEach(
+                (b) => {
+
+                  if (
+                    b.textContent ===
+                    current.answer
+                  ) {
+
+                    b.classList.add(
+                      "correct"
+                    );
+                  }
+                }
+              );
+            }
+          }
         );
 
-    }
-
-
-    catch (error) {
-
-      sentenceResult.textContent =
-        "❌ " +
-        error.message;
-
-    }
-
-
-    finally {
-
-      checkSentenceBtn.disabled =
-        false;
-
-    }
-
+        examOptions.appendChild(
+          button
+        );
+      }
+    );
   }
-);
 
-
-// ============================================================
-// CLEAR SENTENCE
-// ============================================================
-
-clearSentenceBtn.addEventListener(
-  "click",
-  function () {
-
-    sentenceInput.value =
-      "";
-
-
-    sentenceResult.textContent =
-      "Your result will appear here.";
-
+  if (nextExamBtn) {
+    nextExamBtn.disabled = false;
   }
-);
+}
 
 
-// ============================================================
-// WEEKLY EXAM
-// ============================================================
-//
-// VERY IMPORTANT:
-//
-// The exam NEVER creates random vocabulary.
-//
-// Every question comes from the words that the student
-// personally saved in the Vocabulary section.
-//
-// Example:
-//
-// Vocabulary:
-// Brave → সাহসী
-// Honest → সৎ
-// Improve → উন্নতি করা
-//
-// Exam questions are created ONLY from those words.
-// ============================================================
+/* ============================================================
+   EXAM BUTTON
+============================================================ */
+
+if (startExamBtn) {
+
+  startExamBtn.addEventListener(
+    "click",
+    startExam
+  );
+}
 
 
-const startEx
+/* ============================================================
+   NEXT EXAM QUESTION
+============================================================ */
+
+if (nextExamBtn) {
+
+  nextExamBtn.addEventListener(
+    "click",
+    () => {
+
+      if (!examAnswered) {
+
+        alert(
+          "Please choose an answer first."
+        );
+
+        return;
+      }
+
+      examIndex++;
+
+      if (
+        
