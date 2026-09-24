@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ranjita's English Learning & AI Coach</title>
+  <title>Ranjita's AI English Coach & Weekly Exam</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -11,56 +11,59 @@
 
   <div class="app-container">
     <header class="header">
-      <h1>🌱 Daily English Learning Coach</h1>
-      <p class="creator-tag">Created by: <span>Ranjita</span></p>
+      <h1>🌱 Ranjita's AI English Coach</h1>
       <p id="motivational-quote">"Practice makes progress, not perfection!"</p>
       
-      <!-- Score & Practice Tracker -->
       <div class="score-card">
         <div class="score-item">
           <span class="score-label">Today's Score:</span>
           <span id="daily-score" class="score-value">0</span>
         </div>
-        <div class="score-item">
-          <span class="score-label">Sentences Checked:</span>
-          <span id="checked-count" class="score-value">0</span>
-        </div>
       </div>
     </header>
 
-    <!-- 1. Today's Vocabulary Section -->
+    <!-- API Key Input Section -->
+    <div class="card api-card">
+      <div class="card-header">
+        <span class="icon">🔑</span>
+        <h2>Gemini API Key</h2>
+      </div>
+      <p class="instruction">কপি করা API Key-টি নিচের বক্সে পেস্ট করে সেভ করুন:</p>
+      <input type="password" id="api-key-input" placeholder="Paste your API key here...">
+      <button class="btn btn-secondary" onclick="saveApiKey()">Save Key</button>
+    </div>
+
+    <!-- 1. Today's Vocabulary -->
     <div class="card">
       <div class="card-header">
         <span class="icon">📖</span>
-        <h2>Today's Vocabulary List</h2>
+        <h2>Today's Vocabulary</h2>
       </div>
-      <div id="vocab-container" class="vocab-list">
-        <!-- Vocabularies will load here dynamically -->
-      </div>
+      <div id="vocab-container"></div>
     </div>
 
-    <!-- 2. Make Your Own Sentence & Grammar Checker -->
+    <!-- 2. Make Your Own Sentence & Translation -->
     <div class="card">
       <div class="card-header">
         <span class="icon">✍️</span>
-        <h2>Make Your Own Sentence</h2>
+        <h2>Make Your Sentence</h2>
       </div>
-      <p class="instruction">Write sentences using today's words to earn points (+10 per correct sentence):</p>
+      <textarea id="user-sentence" placeholder="Type your sentence in English..."></textarea>
+      <button class="btn btn-primary" onclick="checkSentence()">Check & Translate ✓</button>
       
-      <textarea id="user-sentence" placeholder="Type your sentence here..."></textarea>
-      
-      <button class="btn btn-primary" onclick="checkSentence()">Check My Sentence ✓</button>
-      
-      <div id="sentence-feedback" class="feedback-box hidden"></div>
+      <div id="sentence-feedback" class="feedback-box hidden">
+        <p id="feedback-grammar"></p>
+        <p id="feedback-bangla" class="bangla-text"></p>
+      </div>
     </div>
 
-    <!-- 3. AI Interactive Voice Conversation -->
+    <!-- 3. Smart AI Voice Conversation -->
     <div class="card">
       <div class="card-header">
         <span class="icon">🎙️</span>
         <h2>Interactive Speaking Coach</h2>
       </div>
-      <p class="instruction">Speak with AI. AI will correct your mistakes and converse with you!</p>
+      <p class="instruction">AI-এর সাথে কথা বলুন। AI আপনার ভুল সংশোধন করে প্রশ্ন করবে!</p>
 
       <button id="mic-btn" class="btn btn-speak" onclick="toggleListening()">🎤 Start Speaking</button>
 
@@ -71,20 +74,37 @@
         </div>
 
         <div class="chat-row">
-          <span class="label">Grammar Feedback:</span>
-          <p id="ai-correction" class="chat-bubble correction-bubble">AI feedback will appear here...</p>
-        </div>
-
-        <div class="chat-row">
           <span class="label">AI Coach Reply:</span>
           <p id="ai-reply" class="chat-bubble ai-bubble">AI response will appear here...</p>
+        </div>
+        
+        <div class="chat-row">
+          <span class="label">Bangla Meaning:</span>
+          <p id="ai-reply-bangla" class="chat-bubble bangla-bubble">AI এর কথা বাংলা অর্থ...</p>
         </div>
       </div>
 
       <button class="btn btn-secondary" onclick="speakAIReply()">🔊 Listen AI Reply</button>
     </div>
 
-    <!-- Footer -->
+    <!-- 4. Friday Weekly Exam Section -->
+    <div class="card exam-card">
+      <div class="card-header">
+        <span class="icon">📝</span>
+        <h2>Friday Weekly Exam</h2>
+      </div>
+      <p class="instruction" id="exam-status">শুক্রবার এই সপ্তাহে শেখা পড়াগুলোর ওপর AI আপনার এক্সাম নিবে!</p>
+      
+      <button class="btn btn-exam" onclick="startFridayExam()">Start Friday Exam 📝</button>
+
+      <div id="exam-box" class="exam-box hidden">
+        <p id="exam-question" class="question-text"></p>
+        <textarea id="exam-answer" placeholder="Write your exam answer in English..."></textarea>
+        <button class="btn btn-primary" onclick="submitExamAnswer()">Submit Answer</button>
+        <p id="exam-feedback" class="feedback-text"></p>
+      </div>
+    </div>
+
     <footer class="footer">
       <p>© App Developed for Ranjita's Daily English Practice</p>
     </footer>
