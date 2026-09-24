@@ -14,8 +14,7 @@
 // const AI_API_URL = "https://ronjita-english-ai.username.workers.dev";
 //
 
-const AI_API_URL = "PASTE_YOUR_WORKER_URL_HERE";
-
+const AI_API_URL = "https://still-scene-e8cf.mstronjitaakter.workers.dev";
 
 // =====================================================
 // 2. DAILY SCORE
