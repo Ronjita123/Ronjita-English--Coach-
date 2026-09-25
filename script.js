@@ -169,5 +169,5 @@ function formatText(text) {
   return escapeHTML(text)
     .replace(/\n/g, "<br>")
     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-       }
+       } 
        
