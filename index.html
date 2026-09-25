@@ -1,211 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Ronjita English Coach</title>
-
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .header { text-align: center; background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; }
+    .tab { flex: 1; padding: 10px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-weight: bold; white-space: nowrap; }
+    .tab.active { background: #6e8efb; color: white; }
+    .section { display: none; }
+    .section.active { display: block; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button.primary { background: #6e8efb; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 5px; }
+    button.primary:disabled { background: #cccccc; }
+    .card, .vocab-card, .result, .exam-question { background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #6e8efb; margin-top: 10px; }
+    .chat-box { height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+    .user-message { text-align: right; color: #333; background: #e3f2fd; padding: 8px; border-radius: 6px; margin: 5px 0; }
+    .ai-message { text-align: left; color: #333; background: #f1f1f1; padding: 8px; border-radius: 6px; margin: 5px 0; }
+  </style>
 </head>
-
 <body>
 
-<header class="hero">
-  <div class="creator">✨ Creator: Ronjita</div>
-
-  <h1>Ronjita English Coach</h1>
-
-  <p>Learn • Practice • Test • Improve</p>
-</header>
-
-
-<nav class="tabs">
-
-  <button class="tab active" data-tab="home">
-    🏠 Home
-  </button>
-
-  <button class="tab" data-tab="vocabulary">
-    📚 Vocabulary
-  </button>
-
-  <button class="tab" data-tab="practice">
-    ✍️ Sentence Practice
-  </button>
-
-  <button class="tab" data-tab="exam">
-    📝 Weekly Exam
-  </button>
-
-  <button class="tab" data-tab="progress">
-    📊 Progress
-  </button>
-
-</nav>
-
-
-<main>
-
-<!-- HOME -->
-
-<section id="home" class="section active">
-
-  <div class="card sticky yellow">
-
-    <h2>🌸 Welcome, Ronjita!</h2>
-
-    <p>
-      Every day learn 10 new English words,
-      practice sentences and test yourself.
-    </p>
-
-    <div class="today-box">
-
-      <strong>Today's Learning</strong>
-
-      <p id="todayText"></p>
-
-    </div>
-
+<div class="container">
+  <div class="header">
+    <h2>✨ Creator: Ronjita</h2>
+    <h1>Ronjita English Coach</h1>
+    <p>Learn • Practice • Test • Improve</p>
   </div>
 
-
-  <div class="card sticky pink">
-
-    <h2>🎯 Today's Goal</h2>
-
-    <ul>
-      <li>Learn 10 new vocabulary words</li>
-      <li>Practice your own sentences</li>
-      <li>Take your weekly exam</li>
-    </ul>
-
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="vocabSection">Vocabulary</button>
+    <button class="tab" data-tab="sentenceSection">Sentence Practice</button>
+    <button class="tab" data-tab="chatSection">AI Coach</button>
+    <button class="tab" data-tab="examSection">Weekly Exam</button>
+    <button class="tab" data-tab="statsSection">Progress</button>
   </div>
 
-</section>
-
-
-<!-- VOCABULARY -->
-
-<section id="vocabulary" class="section">
-
-  <div class="card sticky yellow">
-
-    <h2>📚 Today's 10 Vocabulary</h2>
-
-    <p>
-      These words are available for today's lesson.
-    </p>
-
+  <!-- VOCABULARY SECTION -->
+  <div id="vocabSection" class="section active">
+    <h3>📚 Add New Vocabulary</h3>
+    <input type="text" id="wordInput" placeholder="Enter an English word...">
+    <button id="addWordBtn" class="primary">Add Word</button>
+    <div id="vocabularyList" style="margin-top: 20px;"></div>
   </div>
 
-  <div id="vocabularyList" class="vocab-grid"></div>
-
-</section>
-
-
-<!-- SENTENCE PRACTICE -->
-
-<section id="practice" class="section">
-
-  <div class="card sticky blue">
-
-    <h2>✍️ Sentence Practice</h2>
-
-    <p>
-      Choose a vocabulary word and write your own sentence.
-    </p>
-
-    <select id="wordSelect">
-      <option value="">Choose a word</option>
-    </select>
-
-    <textarea
-      id="sentenceInput"
-      placeholder="Write your own English sentence..."
-    ></textarea>
-
-    <button
-      id="checkSentenceBtn"
-      class="primary"
-    >
-      Check Sentence
-    </button>
-
+  <!-- SENTENCE CHECKER SECTION -->
+  <div id="sentenceSection" class="section">
+    <h3>✍️ Sentence Checker</h3>
+    <textarea id="sentenceInput" placeholder="Write your sentence here..."></textarea>
+    <button id="checkSentenceBtn" class="primary">Check My Sentence</button>
     <div id="sentenceResult"></div>
-
   </div>
 
-</section>
+  <!-- AI COACH SECTION -->
+  <div id="chatSection" class="section">
+    <h3>🤖 AI English Coach</h3>
+    <div id="chatBox" class="chat-box"></div>
+    <input type="text" id="chatInput" placeholder="Type your message...">
+    <button id="sendChatBtn" class="primary">Send</button>
+    <button id="byeBtn" style="background:#ff4d4d; color:white; border:none; padding:8px; border-radius:6px; margin-top:5px; width:100%; cursor:pointer;">End Conversation</button>
+  </div>
 
-
-<!-- EXAM -->
-
-<section id="exam" class="section">
-
-  <div class="card sticky green">
-
-    <h2>📝 Weekly Exam</h2>
-
-    <p>
-      Test yourself using this week's vocabulary.
-    </p>
-
-    <button
-      id="startExamBtn"
-      class="primary"
-    >
-      Start Weekly Exam
-    </button>
-
+  <!-- WEEKLY EXAM SECTION -->
+  <div id="examSection" class="section">
+    <h3>📝 Weekly Exam</h3>
+    <button id="startExamBtn" class="primary">Generate Weekly Exam</button>
     <div id="examArea"></div>
-
   </div>
 
-</section>
-
-
-<!-- PROGRESS -->
-
-<section id="progress" class="section">
-
-  <div class="card sticky purple">
-
-    <h2>📊 My Progress</h2>
-
-    <div class="stats">
-
-      <div class="stat">
-        <strong id="wordsLearned">0</strong>
-        <span>Words Learned</span>
-      </div>
-
-      <div class="stat">
-        <strong id="sentencesChecked">0</strong>
-        <span>Sentences Practiced</span>
-      </div>
-
-      <div class="stat">
-        <strong id="examScore">0%</strong>
-        <span>Best Exam Score</span>
-      </div>
-
-    </div>
-
+  <!-- PROGRESS SECTION -->
+  <div id="statsSection" class="section">
+    <h3>📊 Progress Stats</h3>
+    <p><strong>Total Vocabulary Words:</strong> <span id="wordCount">0</span></p>
+    <p><strong>Sentences Checked:</strong> <span id="sentenceCount">0</span></p>
+    <p><strong>Exams Completed:</strong> <span id="examCount">0</span></p>
+    <p><strong>Best Score:</strong> <span id="bestScore">0%</span></p>
   </div>
-
-</section>
-
-</main>
-
-
-<footer>
-  <p>Made with ❤️ by Ronjita</p>
-</footer>
-
+</div>
 
 <script src="script.js"></script>
-
 </body>
-          </html>
+      </html>
+      
