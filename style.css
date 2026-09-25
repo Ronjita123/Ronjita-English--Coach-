@@ -5,14 +5,17 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f5f3ff;
-  color: #242424;
+  background: #f7f4ff;
+  color: #222;
 }
+
+
+/* HERO */
 
 .hero {
   text-align: center;
-  padding: 35px 20px;
-  background: linear-gradient(135deg, #5b2cff, #9c5cff);
+  padding: 35px 18px;
+  background: linear-gradient(135deg, #6236ff, #a45cff);
   color: white;
 }
 
@@ -23,13 +26,14 @@ body {
 
 .hero p {
   margin: 0;
-  opacity: 0.95;
 }
 
 .creator {
   font-weight: bold;
-  font-size: 14px;
 }
+
+
+/* NAVIGATION */
 
 .tabs {
   display: flex;
@@ -40,23 +44,26 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
 }
 
 .tab {
   border: none;
-  padding: 11px 16px;
+  padding: 11px 15px;
   border-radius: 12px;
-  background: #eee;
-  cursor: pointer;
-  white-space: nowrap;
+  background: #eeeeee;
   font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .tab.active {
-  background: #5b2cff;
+  background: #6236ff;
   color: white;
 }
+
+
+/* MAIN */
 
 main {
   max-width: 1000px;
@@ -72,11 +79,14 @@ main {
   display: block;
 }
 
+
+/* CARDS */
+
 .card {
-  border-radius: 22px;
   padding: 25px;
+  border-radius: 22px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 7px 22px rgba(0,0,0,.08);
 }
 
 .sticky {
@@ -84,11 +94,11 @@ main {
 }
 
 .yellow {
-  background: #fff3a8;
+  background: #fff1a8;
 }
 
 .pink {
-  background: #ffd4e5;
+  background: #ffd5e6;
 }
 
 .blue {
@@ -96,89 +106,36 @@ main {
 }
 
 .green {
-  background: #d7f7c8;
+  background: #d7f6c7;
 }
 
 .purple {
-  background: #ead7ff;
+  background: #e8d5ff;
 }
 
-.input-row,
-.chat-input-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
 
-input,
-textarea {
-  width: 100%;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  padding: 13px;
-  font-size: 16px;
-  outline: none;
-}
-
-textarea {
-  min-height: 150px;
-  resize: vertical;
-  margin-top: 15px;
-}
-
-input:focus,
-textarea:focus {
-  border-color: #6c45ff;
-}
-
-button {
-  font-family: inherit;
-}
-
-.primary {
-  border: none;
-  border-radius: 12px;
-  padding: 12px 18px;
-  background: #5b2cff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.primary:hover {
-  opacity: 0.9;
-}
-
-.danger {
-  border: none;
-  border-radius: 12px;
-  padding: 11px 18px;
-  background: #e53935;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 12px;
-}
+/* VOCABULARY */
 
 .vocab-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  grid-template-columns:
+    repeat(auto-fit, minmax(270px, 1fr));
   gap: 18px;
 }
 
 .vocab-card {
   padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  position: relative;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  line-height: 1.6;
 }
 
 .vocab-card:nth-child(4n+1) {
-  background: #fff3a8;
+  background: #fff1a8;
 }
 
 .vocab-card:nth-child(4n+2) {
-  background: #ffd4e5;
+  background: #ffd5e6;
 }
 
 .vocab-card:nth-child(4n+3) {
@@ -186,109 +143,129 @@ button {
 }
 
 .vocab-card:nth-child(4n+4) {
-  background: #d7f7c8;
+  background: #d7f6c7;
 }
 
 .vocab-card h3 {
   margin-top: 0;
-  font-size: 23px;
+  font-size: 24px;
 }
 
-.vocab-card p {
-  line-height: 1.6;
+
+/* INPUT */
+
+select,
+textarea {
+  width: 100%;
+  margin-top: 15px;
+  padding: 13px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
 }
 
-.delete-word {
+textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #6236ff;
+}
+
+
+/* BUTTON */
+
+.primary {
   border: none;
-  background: transparent;
-  color: #d32f2f;
-  cursor: pointer;
+  padding: 12px 18px;
+  margin-top: 15px;
+  border-radius: 12px;
+  background: #6236ff;
+  color: white;
   font-weight: bold;
+  cursor: pointer;
 }
+
+.primary:hover {
+  opacity: .9;
+}
+
+
+/* SENTENCE RESULT */
 
 .result {
-  margin-top: 20px;
-  padding: 18px;
   background: white;
+  margin-top: 18px;
+  padding: 18px;
   border-radius: 15px;
   line-height: 1.7;
-  white-space: pre-wrap;
 }
 
-.chat-box {
-  height: 420px;
-  overflow-y: auto;
-  padding: 15px;
-  background: rgba(255,255,255,0.7);
-  border-radius: 18px;
-  margin-top: 20px;
-}
 
-.ai-message,
-.user-message {
-  max-width: 85%;
-  padding: 12px 15px;
-  margin-bottom: 12px;
-  border-radius: 15px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.ai-message {
-  background: white;
-  margin-right: auto;
-}
-
-.user-message {
-  background: #5b2cff;
-  color: white;
-  margin-left: auto;
-}
+/* EXAM */
 
 .exam-question {
   background: white;
-  padding: 18px;
-  border-radius: 15px;
   margin-top: 18px;
+  padding: 18px;
+  border-radius: 16px;
 }
 
 .exam-question textarea {
   min-height: 90px;
 }
 
-.exam-result {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #f3f3f3;
-  white-space: pre-wrap;
-  line-height: 1.6;
+.correct {
+  background: #d8f7d0;
 }
+
+.incorrect {
+  background: #ffdada;
+}
+
+
+/* PROGRESS */
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(3, 1fr);
   gap: 15px;
-  margin-top: 20px;
 }
 
 .stat {
   background: white;
   padding: 20px;
-  border-radius: 16px;
   text-align: center;
+  border-radius: 16px;
 }
 
 .stat strong {
   display: block;
   font-size: 30px;
-  color: #5b2cff;
+  color: #6236ff;
 }
 
 .stat span {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
 }
+
+
+/* HOME */
+
+.today-box {
+  margin-top: 18px;
+  background: white;
+  padding: 18px;
+  border-radius: 15px;
+}
+
+
+/* FOOTER */
 
 footer {
   text-align: center;
@@ -296,23 +273,21 @@ footer {
   color: #666;
 }
 
+
+/* MOBILE */
+
 @media (max-width: 600px) {
 
   .hero h1 {
-    font-size: 25px;
+    font-size: 26px;
   }
 
   main {
     padding: 12px;
   }
 
-  .input-row,
-  .chat-input-row {
-    flex-direction: column;
-  }
-
   .stats {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
-    }
+  }
