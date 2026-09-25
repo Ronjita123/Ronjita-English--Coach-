@@ -3,414 +3,235 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ronjita's AI English Coach - vocabulary, speaking, grammar correction and weekly exam.">
-  <title>Ronjita's AI English Coach</title>
+
+  <title>Ronjita English Coach</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header class="hero">
-    <div class="container">
-      <p class="eyebrow">ENGLISH LEARNING</p>
+<header class="hero">
+  <div class="creator">✨ Creator: Ronjita</div>
 
-      <h1>Ronjita's AI English Coach</h1>
+  <h1>Ronjita English Coach</h1>
 
-      <p class="subtitle">
-        Speak • Learn Vocabulary • Fix Grammar • Practice Every Day
-      </p>
+  <p>
+    Learn vocabulary • Build sentences • Talk with AI • Test yourself
+  </p>
+</header>
+
+
+<nav class="tabs">
+
+  <button class="tab active" data-tab="vocabulary">
+    📚 Vocabulary
+  </button>
+
+  <button class="tab" data-tab="sentence">
+    ✍️ Sentence Checker
+  </button>
+
+  <button class="tab" data-tab="coach">
+    🤖 AI Coach
+  </button>
+
+  <button class="tab" data-tab="exam">
+    📝 Weekly Exam
+  </button>
+
+  <button class="tab" data-tab="progress">
+    📊 Progress
+  </button>
+
+</nav>
+
+
+<main>
+
+
+<!-- ================= VOCABULARY ================= -->
+
+<section id="vocabulary" class="section active">
+
+  <div class="card sticky yellow">
+
+    <h2>📚 My Vocabulary</h2>
+
+    <p>Add a new English word.</p>
+
+    <div class="input-row">
+
+      <input
+        id="wordInput"
+        type="text"
+        placeholder="Example: beautiful"
+      >
+
+      <button id="addWordBtn" class="primary">
+        Add Word
+      </button>
+
     </div>
-  </header>
 
+  </div>
 
-  <main class="container">
 
-    <!-- =========================
-         STATISTICS
-    ========================== -->
+  <div id="vocabularyList" class="vocab-grid"></div>
 
-    <section class="stats">
+</section>
 
-      <div class="stat">
-        <strong id="conversationCount">0</strong>
-        <span>Conversations</span>
-      </div>
 
-      <div class="stat">
-        <strong id="correctionCount">0</strong>
-        <span>Corrections</span>
-      </div>
 
-      <div class="stat">
-        <strong id="vocabularyCount">0</strong>
-        <span>My Words</span>
-      </div>
+<!-- ================= SENTENCE CHECKER ================= -->
 
-      <div class="stat">
-        <strong id="examScore">—</strong>
-        <span>Last Exam</span>
-      </div>
+<section id="sentence" class="section">
 
-    </section>
+  <div class="card sticky pink">
 
-
-    <!-- =========================
-         NAVIGATION
-    ========================== -->
-
-    <nav class="tabs">
-
-      <button
-        class="tab active"
-        data-tab="coach">
-        🤖 AI Coach
-      </button>
-
-      <button
-        class="tab"
-        data-tab="vocab">
-        📚 Vocabulary
-      </button>
-
-      <button
-        class="tab"
-        data-tab="sentence">
-        ✍️ Sentence Checker
-      </button>
-
-      <button
-        class="tab"
-        data-tab="exam">
-        📝 Weekly Exam
-      </button>
-
-    </nav>
-
-
-    <!-- =========================
-         AI COACH
-    ========================== -->
-
-    <section
-      id="coach"
-      class="panel tab-panel active">
-
-      <h2>AI Conversation Coach</h2>
-
-      <p class="muted">
-        Speak or type in English. The AI will reply,
-        correct your English, and ask a follow-up question.
-      </p>
-
-
-      <div class="coach-box">
-
-        <label for="userText">
-          Your English
-        </label>
-
-        <textarea
-          id="userText"
-          rows="5"
-          placeholder="Type something in English or tap the microphone...">
-        </textarea>
-
-
-        <div class="button-row">
-
-          <button
-            id="speakBtn"
-            class="secondary">
-            🎤 Speak
-          </button>
-
-          <button
-            id="sendBtn"
-            class="primary">
-            Send to AI
-          </button>
-
-          <button
-            id="clearBtn"
-            class="ghost">
-            Clear
-          </button>
-
-        </div>
-
-
-        <p
-          id="status"
-          class="status">
-          Ready.
-        </p>
-
-      </div>
-
-
-      <div class="result-grid">
-
-        <article class="result-card">
-
-          <h3>🤖 AI Reply</h3>
-
-          <p id="aiReply">
-            Your AI reply will appear here.
-          </p>
-
-        </article>
-
-
-        <article class="result-card">
-
-          <h3>✍️ Correction</h3>
-
-          <p id="correction">
-            Your grammar correction will appear here.
-          </p>
-
-        </article>
-
-
-        <article class="result-card">
-
-          <h3>❓ Follow-up Question</h3>
-
-          <p id="question">
-            Your next question will appear here.
-          </p>
-
-        </article>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         VOCABULARY
-    ========================== -->
-
-    <section
-      id="vocab"
-      class="panel tab-panel">
-
-      <h2>My Vocabulary</h2>
-
-      <p class="muted">
-        Save words you learn. They stay on this device.
-      </p>
-
-
-      <form
-        id="vocabForm"
-        class="form-grid">
-
-        <input
-          id="wordInput"
-          type="text"
-          placeholder="Word"
-          required>
-
-
-        <input
-          id="meaningInput"
-          type="text"
-          placeholder="Meaning"
-          required>
-
-
-        <input
-          id="exampleInput"
-          type="text"
-          placeholder="Example sentence">
-
-
-        <button
-          class="primary"
-          type="submit">
-          ＋ Add Word
-        </button>
-
-      </form>
-
-
-      <div class="vocab-tools">
-
-        <input
-          id="vocabSearch"
-          type="search"
-          placeholder="Search my words...">
-
-
-        <button
-          id="clearVocabBtn"
-          class="danger">
-          Delete All Words
-        </button>
-
-      </div>
-
-
-      <div
-        id="vocabList"
-        class="vocab-list">
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         SENTENCE CHECKER
-    ========================== -->
-
-    <section
-      id="sentence"
-      class="panel tab-panel">
-
-      <h2>Sentence Checker</h2>
-
-      <p class="muted">
-        Write an English sentence and let the AI explain the correction.
-      </p>
-
-
-      <textarea
-        id="sentenceInput"
-        rows="5"
-        placeholder="Example: I am go to school every day.">
-      </textarea>
-
-
-      <div class="button-row">
-
-        <button
-          id="checkSentenceBtn"
-          class="primary">
-          Check Sentence
-        </button>
-
-        <button
-          id="clearSentenceBtn"
-          class="ghost">
-          Clear
-        </button>
-
-      </div>
-
-
-      <div
-        id="sentenceResult"
-        class="ai-box">
-
-        Your result will appear here.
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         WEEKLY EXAM
-    ========================== -->
-
-    <section
-      id="exam"
-      class="panel tab-panel">
-
-      <h2>Weekly English Exam</h2>
-
-      <p class="muted">
-        The exam questions will come from the vocabulary
-        that you have saved yourself.
-      </p>
-
-
-      <div class="exam-top">
-
-        <button
-          id="startExamBtn"
-          class="primary">
-          Start Exam
-        </button>
-
-
-        <span id="examProgress">
-          No exam started.
-        </span>
-
-      </div>
-
-
-      <div
-        id="examArea"
-        class="exam-area hidden">
-
-        <h3 id="examQuestion"></h3>
-
-
-        <div
-          id="examOptions"
-          class="options">
-        </div>
-
-
-        <button
-          id="nextExamBtn"
-          class="primary"
-          disabled>
-          Next
-        </button>
-
-      </div>
-
-
-      <div
-        id="examResult"
-        class="ai-box">
-
-        Your exam score will appear here.
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         DAILY MESSAGE
-    ========================== -->
-
-    <section class="tips">
-
-      <h2>Daily Rule</h2>
-
-      <p>
-        Speak a little English every day.
-        Learn a few words, use them in sentences,
-        and review your mistakes.
-      </p>
-
-    </section>
-
-  </main>
-
-
-  <!-- =========================
-       FOOTER
-  ========================== -->
-
-  <footer>
+    <h2>✍️ Sentence Checker</h2>
 
     <p>
-      Ronjita's English Coach •
-      Your progress is stored on this device.
+      Use your vocabulary and write your own sentence.
     </p>
 
-  </footer>
+    <textarea
+      id="sentenceInput"
+      placeholder="Write your English sentence here..."
+    ></textarea>
+
+    <button id="checkSentenceBtn" class="primary">
+      Check My Sentence
+    </button>
+
+    <div id="sentenceResult"></div>
+
+  </div>
+
+</section>
 
 
-  <script src="script.js"></script>
+
+<!-- ================= AI COACH ================= -->
+
+<section id="coach" class="section">
+
+  <div class="card sticky blue">
+
+    <h2>🤖 AI English Coach</h2>
+
+    <p>
+      Talk with your AI English coach in English.
+    </p>
+
+    <div id="chatBox" class="chat-box">
+
+      <div class="ai-message">
+        Hello Ronjita! 👋 How are you today?
+        What would you like to learn today?
+      </div>
+
+    </div>
+
+
+    <div class="chat-input-row">
+
+      <input
+        id="chatInput"
+        type="text"
+        placeholder="Type your message..."
+      >
+
+      <button id="sendChatBtn" class="primary">
+        Send
+      </button>
+
+    </div>
+
+
+    <button id="byeBtn" class="danger">
+      👋 Bye / End Conversation
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<!-- ================= EXAM ================= -->
+
+<section id="exam" class="section">
+
+  <div class="card sticky green">
+
+    <h2>📝 Weekly Vocabulary Exam</h2>
+
+    <p>
+      Your exam will be created from your saved vocabulary.
+    </p>
+
+    <button id="startExamBtn" class="primary">
+      Generate Weekly Exam
+    </button>
+
+    <div id="examArea"></div>
+
+  </div>
+
+</section>
+
+
+
+<!-- ================= PROGRESS ================= -->
+
+<section id="progress" class="section">
+
+  <div class="card sticky purple">
+
+    <h2>📊 My Progress</h2>
+
+    <div class="stats">
+
+      <div class="stat">
+        <strong id="wordCount">0</strong>
+        <span>Vocabulary</span>
+      </div>
+
+      <div class="stat">
+        <strong id="sentenceCount">0</strong>
+        <span>Sentences Checked</span>
+      </div>
+
+      <div class="stat">
+        <strong id="examCount">0</strong>
+        <span>Exams</span>
+      </div>
+
+      <div class="stat">
+        <strong id="bestScore">0%</strong>
+        <span>Best Score</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  <p>
+    Made with ❤️ for Ronjita's English learning journey.
+  </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
-  </html>
+    </html>
