@@ -1,377 +1,648 @@
-const WORKER_URL =
-  "https://still-scene-e8cf.mstronjitaakter.workers.dev/";
+/* =========================================================
+   RONJITA ENGLISH COACH
+   FINAL COMBINED SCRIPT
+   Gemini AI + Vocabulary + Sentence Checker
+   AI Coach + Weekly Exam + Progress
+========================================================= */
 
 
-/* =========================================
-   STORAGE
-========================================= */
+/* =========================================================
+   1. GEMINI CONFIGURATION
+========================================================= */
+
+const GEMINI_API_KEY = AQ.Ab8RN6JSXiEHgXBDyIgY8J6z_WzThMb9yLKCd6TmHdmWOF66bw
+
+const GEMINI_MODEL = "gemini-3.6-flash";
+
+const GEMINI_URL =
+  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+
+/* =========================================================
+   2. GEMINI FUNCTION
+========================================================= */
+
+async function callGemini(prompt) {
+
+  if (
+    !GEMINI_API_KEY ||
+    GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE"
+  ) {
+    throw new Error(
+      "Gemini API key বসানো হয়নি। script.js-এর উপরে নিজের API key বসাও।"
+    );
+  }
+
+  const response = await fetch(GEMINI_URL, {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": GEMINI_API_KEY
+    },
+
+    body: JSON.stringify({
+
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt
+            }
+          ]
+        }
+      ]
+
+    })
+
+  });
+
+
+  let data;
+
+  try {
+
+    data = await response.json();
+
+  } catch {
+
+    throw new Error(
+      "Gemini থেকে সঠিক response পাওয়া যায়নি।"
+    );
+
+  }
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      data?.error?.message ||
+      "Gemini API request failed."
+    );
+
+  }
+
+
+  const text =
+    data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("")
+      .trim();
+
+
+  if (!text) {
+
+    throw new Error(
+      "Gemini কোনো text response দেয়নি।"
+    );
+
+  }
+
+
+  return text;
+
+}
+
+
+/* =========================================================
+   3. LOCAL STORAGE
+========================================================= */
 
 let vocabulary =
-  JSON.parse(localStorage.getItem("ronjitaVocabulary")) || [];
+  JSON.parse(
+    localStorage.getItem("ronjitaVocabulary")
+  ) || [];
+
 
 let stats =
-  JSON.parse(localStorage.getItem("ronjitaStats")) || {
+  JSON.parse(
+    localStorage.getItem("ronjitaStats")
+  ) || {
+
     sentences: 0,
     exams: 0,
     bestScore: 0
+
   };
+
 
 let chatHistory = [];
 
 let currentExam = [];
 
+let examResults = {};
+
 
 function saveVocabulary() {
+
   localStorage.setItem(
     "ronjitaVocabulary",
     JSON.stringify(vocabulary)
   );
+
 }
 
 
 function saveStats() {
+
   localStorage.setItem(
     "ronjitaStats",
     JSON.stringify(stats)
   );
+
 }
 
 
-/* =========================================
-   TABS
-========================================= */
+/* =========================================================
+   4. BASIC HELPERS
+========================================================= */
 
-document.querySelectorAll(".tab").forEach(button => {
+function escapeHTML(value) {
 
-  button.addEventListener("click", () => {
+  return String(value)
 
-    document.querySelectorAll(".tab")
-      .forEach(btn => btn.classList.remove("active"));
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
-    document.querySelectorAll(".section")
-      .forEach(section => section.classList.remove("active"));
-
-    button.classList.add("active");
-
-    const target =
-      document.getElementById(button.dataset.tab);
-
-    if (target) {
-      target.classList.add("active");
-    }
-
-  });
-
-});
-
-
-/* =========================================
-   API
-========================================= */
-
-async function callWorker(action, data = {}) {
-
-  const response = await fetch(WORKER_URL, {
-
-    method: "POST",
-
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-    body: JSON.stringify({
-      action,
-      ...data
-    })
-
-  });
-
-  const result = await response.json();
-
-  if (!response.ok || !result.success) {
-    throw new Error(
-      result.error || "Something went wrong."
-    );
-  }
-
-  return result;
 }
 
 
-/* =========================================
-   VOCABULARY
-========================================= */
+function getTodayKey() {
 
-const wordInput =
-  document.getElementById("wordInput");
+  const date = new Date();
 
-const addWordBtn =
-  document.getElementById("addWordBtn");
+  return date.toISOString().slice(0, 10);
+
+}
+
+
+/* =========================================================
+   5. TABS
+========================================================= */
+
+document
+  .querySelectorAll(".tab")
+  .forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      document
+        .querySelectorAll(".tab")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+
+      document
+        .querySelectorAll(".section")
+        .forEach(section =>
+          section.classList.remove("active")
+        );
+
+
+      button.classList.add("active");
+
+
+      const target =
+        document.getElementById(
+          button.dataset.tab
+        );
+
+
+      if (target) {
+
+        target.classList.add("active");
+
+      }
+
+    });
+
+  });
+
+
+/* =========================================================
+   6. TODAY'S 10 VOCABULARY
+========================================================= */
 
 const vocabularyList =
-  document.getElementById("vocabularyList");
+  document.getElementById(
+    "vocabularyList"
+  );
 
 
-addWordBtn.addEventListener("click", addVocabulary);
+async function generateDailyVocabulary() {
+
+  const today = getTodayKey();
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem(
+        "ronjitaDailyVocabulary"
+      )
+    );
 
 
-wordInput.addEventListener("keydown", event => {
+  if (
+    saved &&
+    saved.date === today &&
+    Array.isArray(saved.words) &&
+    saved.words.length >= 10
+  ) {
 
-  if (event.key === "Enter") {
-    addVocabulary();
+    displayDailyVocabulary(
+      saved.words.slice(0, 10)
+    );
+
+    return saved.words.slice(0, 10);
+
   }
 
-});
+
+  if (!vocabularyList) return [];
 
 
-async function addVocabulary() {
+  vocabularyList.innerHTML = `
 
-  const word =
-    wordInput.value.trim();
+    <div class="card">
 
-  if (!word) {
-    alert("Please enter an English word.");
-    return;
-  }
+      <h3>🤖 Creating today's vocabulary...</h3>
 
-  addWordBtn.disabled = true;
-  addWordBtn.textContent = "Creating...";
+      <p>
+        Gemini is preparing 10 new English words for you.
+      </p>
+
+    </div>
+
+  `;
+
 
   try {
 
-    const result =
-      await callWorker("vocabulary", {
-        word
-      });
+    const prompt = `
 
-    const text = result.text;
+You are an English teacher creating a daily vocabulary lesson.
 
-    const item = {
+Create exactly 10 useful English vocabulary words for a Bangladeshi HSC student.
 
-      id: Date.now(),
+Return ONLY valid JSON.
 
-      word,
+Format:
 
-      card: text,
+[
+  {
+    "word": "example",
+    "meaning": "simple English meaning",
+    "bangla": "বাংলা অর্থ",
+    "translation": "বাংলা অনুবাদ",
+    "sentence": "A natural English example sentence."
+  }
+]
 
-      meaning: extractLine(
-        text,
-        "Meaning in simple English:"
-      ),
+Rules:
 
-      translation: extractLine(
-        text,
-        "Bengali translation:"
-      ),
+- Exactly 10 words.
+- Do not repeat these words:
+${vocabulary.map(item => item.word).join(", ")}
 
-      example: extractLine(
-        text,
-        "One natural English example sentence:"
-      ),
+- Suitable for daily English learning.
+- Use different words each day.
+- Keep meanings simple.
+- Example sentences must be natural.
+- Do not add markdown.
+- Do not add explanations outside JSON.
 
-      createdAt: new Date().toISOString()
+Today's date: ${today}
 
-    };
+`;
 
-    vocabulary.push(item);
 
-    saveVocabulary();
+    const response =
+      await callGemini(prompt);
 
-    wordInput.value = "";
 
-    renderVocabulary();
+    const clean =
+      response
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
 
-    updateStats();
+
+    const words =
+      JSON.parse(clean);
+
+
+    if (
+      !Array.isArray(words) ||
+      words.length < 10
+    ) {
+
+      throw new Error(
+        "Gemini 10টি vocabulary তৈরি করতে পারেনি।"
+      );
+
+    }
+
+
+    const todayWords =
+      words.slice(0, 10);
+
+
+    localStorage.setItem(
+
+      "ronjitaDailyVocabulary",
+
+      JSON.stringify({
+
+        date: today,
+
+        words: todayWords
+
+      })
+
+    );
+
+
+    displayDailyVocabulary(
+      todayWords
+    );
+
+
+    return todayWords;
+
 
   } catch (error) {
 
-    alert(error.message);
+    vocabularyList.innerHTML = `
 
-  } finally {
+      <div class="card">
 
-    addWordBtn.disabled = false;
-    addWordBtn.textContent = "Add Word";
+        <h3>⚠️ Vocabulary তৈরি করা যায়নি</h3>
+
+        <p>
+          ${escapeHTML(error.message)}
+        </p>
+
+      </div>
+
+    `;
+
+    return [];
 
   }
 
 }
 
 
-function extractLine(text, label) {
+/* =========================================================
+   7. DISPLAY DAILY VOCABULARY
+========================================================= */
 
-  const lines =
-    text.split("\n");
+function displayDailyVocabulary(words) {
 
-  const line =
-    lines.find(item =>
-      item.toLowerCase()
-        .startsWith(label.toLowerCase())
-    );
+  if (!vocabularyList) return;
 
-  if (!line) {
-    return "";
-  }
-
-  return line
-    .substring(label.length)
-    .replace(/^[:\-\s]+/, "")
-    .trim();
-}
-
-
-function renderVocabulary() {
 
   vocabularyList.innerHTML = "";
 
-  if (!vocabulary.length) {
 
-    vocabularyList.innerHTML = `
-      <div class="card">
-        <h3>No vocabulary yet.</h3>
-        <p>Add your first English word above.</p>
-      </div>
+  words.forEach((item, index) => {
+
+    const card =
+      document.createElement("div");
+
+
+    card.className =
+      "vocab-card";
+
+
+    card.innerHTML = `
+
+      <h3>
+        ${index + 1}. ${escapeHTML(item.word)}
+      </h3>
+
+      <p>
+        <strong>English Meaning:</strong><br>
+        ${escapeHTML(item.meaning)}
+      </p>
+
+      <p>
+        <strong>বাংলা অর্থ:</strong><br>
+        ${escapeHTML(item.bangla)}
+      </p>
+
+      <p>
+        <strong>বাংলা অনুবাদ:</strong><br>
+        ${escapeHTML(item.translation)}
+      </p>
+
+      <p>
+        <strong>Example:</strong><br>
+        ${escapeHTML(item.sentence)}
+      </p>
+
     `;
 
-    return;
-  }
+
+    vocabularyList.appendChild(card);
+
+  });
 
 
-  vocabulary
-    .slice()
-    .reverse()
-    .forEach(item => {
-
-      const card =
-        document.createElement("div");
-
-      card.className = "vocab-card";
-
-      card.innerHTML = `
-
-        <h3>${escapeHTML(item.word)}</h3>
-
-        <p>
-          <strong>Meaning:</strong><br>
-          ${escapeHTML(item.meaning || "See full card below.")}
-        </p>
-
-        <p>
-          <strong>বাংলা অর্থ:</strong><br>
-          ${escapeHTML(item.translation || "")}
-        </p>
-
-        <p>
-          <strong>Example:</strong><br>
-          ${escapeHTML(item.example || "")}
-        </p>
-
-        <details>
-          <summary>Full vocabulary card</summary>
-          <p>
-            ${escapeHTML(item.card)}
-          </p>
-        </details>
-
-        <button
-          class="delete-word"
-          data-id="${item.id}"
-        >
-          Delete
-        </button>
-
-      `;
-
-      vocabularyList.appendChild(card);
-
-    });
-
-
-  document
-    .querySelectorAll(".delete-word")
-    .forEach(button => {
-
-      button.addEventListener("click", () => {
-
-        const id =
-          Number(button.dataset.id);
-
-        vocabulary =
-          vocabulary.filter(
-            item => item.id !== id
-          );
-
-        saveVocabulary();
-
-        renderVocabulary();
-
-        updateStats();
-
-      });
-
-    });
+  updateWordSelect(words);
 
 }
 
 
-/* =========================================
-   SENTENCE CHECKER
-========================================= */
+/* =========================================================
+   8. WORD SELECT
+========================================================= */
+
+const wordSelect =
+  document.getElementById(
+    "wordSelect"
+  );
+
+
+function updateWordSelect(words) {
+
+  if (!wordSelect) return;
+
+
+  wordSelect.innerHTML = `
+
+    <option value="">
+      Choose a word
+    </option>
+
+  `;
+
+
+  words.forEach(item => {
+
+    const option =
+      document.createElement("option");
+
+
+    option.value =
+      item.word;
+
+
+    option.textContent =
+      item.word;
+
+
+    wordSelect.appendChild(option);
+
+  });
+
+}
+
+
+/* =========================================================
+   9. SENTENCE CHECKER
+========================================================= */
 
 const sentenceInput =
-  document.getElementById("sentenceInput");
+  document.getElementById(
+    "sentenceInput"
+  );
+
 
 const checkSentenceBtn =
-  document.getElementById("checkSentenceBtn");
+  document.getElementById(
+    "checkSentenceBtn"
+  );
+
 
 const sentenceResult =
-  document.getElementById("sentenceResult");
+  document.getElementById(
+    "sentenceResult"
+  );
 
 
-checkSentenceBtn.addEventListener(
-  "click",
-  checkSentence
-);
+if (checkSentenceBtn) {
+
+  checkSentenceBtn.addEventListener(
+    "click",
+    checkSentence
+  );
+
+}
 
 
 async function checkSentence() {
 
   const sentence =
-    sentenceInput.value.trim();
+    sentenceInput?.value.trim();
+
+
+  const selectedWord =
+    wordSelect?.value.trim();
+
 
   if (!sentence) {
-    alert("Write a sentence first.");
+
+    alert(
+      "আগে একটি English sentence লিখো।"
+    );
+
     return;
+
   }
 
-  checkSentenceBtn.disabled = true;
-  checkSentenceBtn.textContent = "Checking...";
 
-  sentenceResult.innerHTML =
-    `<div class="result">Checking your sentence...</div>`;
+  if (!selectedWord) {
+
+    alert(
+      "আগে একটি vocabulary word নির্বাচন করো।"
+    );
+
+    return;
+
+  }
+
+
+  checkSentenceBtn.disabled = true;
+
+  checkSentenceBtn.textContent =
+    "Checking...";
+
+
+  sentenceResult.innerHTML = `
+
+    <div class="result">
+
+      🤖 Gemini is checking your sentence...
+
+    </div>
+
+  `;
+
 
   try {
 
-    const result =
-      await callWorker("sentence", {
+    const prompt = `
 
-        sentence,
+You are a friendly English teacher.
 
-        vocabulary:
-          vocabulary.map(v => ({
-            word: v.word,
-            meaning: v.meaning,
-            translation: v.translation,
-            example: v.example
-          }))
+Student name: Ronjita
 
-      });
+Selected vocabulary word:
+"${selectedWord}"
+
+Student sentence:
+"${sentence}"
+
+Check the sentence carefully.
+
+Return your answer using exactly these headings:
+
+Grammar:
+Correct / Needs Correction
+
+What is wrong:
+Explain the mistake simply.
+
+Corrected sentence:
+Write the corrected sentence.
+
+বাংলা ব্যাখ্যা:
+Explain the mistake briefly in Bengali.
+
+Meaning:
+Give the Bengali meaning of the corrected sentence.
+
+Teacher note:
+Give one short encouraging sentence.
+
+Do not invent a mistake if the sentence is grammatically correct.
+
+`;
+
+
+    const response =
+      await callGemini(prompt);
 
 
     sentenceResult.innerHTML = `
+
       <div class="result">
-        ${escapeHTML(result.text)}
+
+        <h3>👩‍🏫 English Teacher Feedback</h3>
+
+        <p style="white-space: pre-line;">
+          ${escapeHTML(response)}
+        </p>
+
       </div>
+
     `;
+
 
     stats.sentences++;
 
@@ -379,132 +650,361 @@ async function checkSentence() {
 
     updateStats();
 
+
   } catch (error) {
 
     sentenceResult.innerHTML = `
+
       <div class="result">
-        Error: ${escapeHTML(error.message)}
+
+        ❌ ${escapeHTML(error.message)}
+
       </div>
+
     `;
 
   } finally {
 
     checkSentenceBtn.disabled = false;
+
     checkSentenceBtn.textContent =
-      "Check My Sentence";
+      "Check Sentence";
 
   }
 
 }
 
 
-/* =========================================
-   AI COACH
-========================================= */
+/* =========================================================
+   10. AI COACH
+========================================================= */
 
-const chatInput =
-  document.getElementById("chatInput");
-
-const sendChatBtn =
-  document.getElementById("sendChatBtn");
-
-const chatBox =
-  document.getElementById("chatBox");
-
-const byeBtn =
-  document.getElementById("byeBtn");
+/*
+   তোমার পুরোনো HTML-এ AI Coach section না থাকলে
+   এই code নিজে থেকে সেটি তৈরি করবে।
+*/
 
 
-sendChatBtn.addEventListener(
-  "click",
-  sendChat
-);
+function createAICoach() {
+
+  if (
+    document.getElementById("aiCoachSection")
+  ) return;
 
 
-chatInput.addEventListener(
-  "keydown",
-  event => {
+  const section =
+    document.createElement("section");
 
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey
-    ) {
 
-      event.preventDefault();
+  section.id =
+    "aiCoachSection";
 
-      sendChat();
 
-    }
+  section.className =
+    "section";
+
+
+  section.innerHTML = `
+
+    <div class="card sticky blue">
+
+      <h2>🤖 AI English Coach</h2>
+
+      <p>
+        Talk with Ronjita English Coach.
+      </p>
+
+      <div
+        id="chatBox"
+        style="
+          background:white;
+          padding:15px;
+          border-radius:15px;
+          min-height:200px;
+          max-height:400px;
+          overflow-y:auto;
+        "
+      ></div>
+
+
+      <textarea
+        id="chatInput"
+        placeholder="Write in English..."
+      ></textarea>
+
+
+      <button
+        id="sendChatBtn"
+        class="primary"
+      >
+        Send
+      </button>
+
+
+      <button
+        id="byeBtn"
+        class="primary"
+      >
+        Bye 👋
+      </button>
+
+    </div>
+
+  `;
+
+
+  document
+    .querySelector("main")
+    ?.appendChild(section);
+
+
+  const nav =
+    document.querySelector(".tabs");
+
+
+  if (nav) {
+
+    const button =
+      document.createElement("button");
+
+
+    button.className =
+      "tab";
+
+
+    button.dataset.tab =
+      "aiCoachSection";
+
+
+    button.textContent =
+      "🤖 AI Coach";
+
+
+    nav.appendChild(button);
+
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(".tab")
+          .forEach(btn =>
+            btn.classList.remove("active")
+          );
+
+
+        document
+          .querySelectorAll(".section")
+          .forEach(sec =>
+            sec.classList.remove("active")
+          );
+
+
+        button.classList.add("active");
+
+        section.classList.add("active");
+
+      }
+    );
 
   }
-);
+
+}
+
+
+createAICoach();
+
+
+/* =========================================================
+   11. AI CHAT
+========================================================= */
+
+let chatInput =
+  document.getElementById(
+    "chatInput"
+  );
+
+
+let sendChatBtn =
+  document.getElementById(
+    "sendChatBtn"
+  );
+
+
+let chatBox =
+  document.getElementById(
+    "chatBox"
+  );
+
+
+let byeBtn =
+  document.getElementById(
+    "byeBtn"
+  );
+
+
+function refreshChatElements() {
+
+  chatInput =
+    document.getElementById(
+      "chatInput"
+    );
+
+  sendChatBtn =
+    document.getElementById(
+      "sendChatBtn"
+    );
+
+  chatBox =
+    document.getElementById(
+      "chatBox"
+    );
+
+  byeBtn =
+    document.getElementById(
+      "byeBtn"
+    );
+
+}
+
+
+refreshChatElements();
+
+
+if (sendChatBtn) {
+
+  sendChatBtn.addEventListener(
+    "click",
+    sendChat
+  );
+
+}
+
+
+if (chatInput) {
+
+  chatInput.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendChat();
+
+      }
+
+    }
+  );
+
+}
 
 
 async function sendChat() {
 
+  refreshChatElements();
+
+
+  if (!chatInput) return;
+
+
   const message =
     chatInput.value.trim();
 
-  if (!message) {
-    return;
-  }
+
+  if (!message) return;
+
 
   addChatMessage(
     "user",
     message
   );
 
+
   chatInput.value = "";
 
+
   sendChatBtn.disabled = true;
-  sendChatBtn.textContent = "Thinking...";
+
+  sendChatBtn.textContent =
+    "Thinking...";
 
 
   try {
 
-    const result =
-      await callWorker("chat", {
+    const previousConversation =
+      chatHistory
+        .slice(-10)
+        .map(item =>
+          `${item.role}: ${item.text}`
+        )
+        .join("\n");
 
-        message,
 
-        history: chatHistory
+    const prompt = `
 
-      });
+You are Ronjita's personal English Coach.
+
+Your job is to help a student practice natural English conversation.
+
+Student name: Ronjita
+
+Important rules:
+
+1. Speak naturally and warmly.
+2. Keep the conversation going.
+3. Ask a follow-up question when appropriate.
+4. Start a new topic when the conversation begins.
+5. If Ronjita makes a grammar mistake, gently correct it.
+6. Use this style:
+   "Ronjita, did you mean: ...?"
+7. Explain important grammar mistakes briefly in Bengali.
+8. Do not stop the conversation unless Ronjita says bye.
+9. Do not make every answer too long.
+10. Encourage English speaking and writing.
+
+Previous conversation:
+
+${previousConversation}
+
+Current student message:
+
+${message}
+
+Reply naturally as the English Coach.
+
+`;
+
+
+    const response =
+      await callGemini(prompt);
 
 
     addChatMessage(
       "ai",
-      result.text
+      response
     );
-
-
-    chatHistory.push({
-      role: "user",
-      content: message
-    });
-
-    chatHistory.push({
-      role: "assistant",
-      content: result.text
-    });
-
-
-    chatHistory =
-      chatHistory.slice(-12);
 
 
   } catch (error) {
 
     addChatMessage(
       "ai",
-      "Sorry, I couldn't connect right now. " +
+      "Sorry, Gemini connection failed: " +
       error.message
     );
 
   } finally {
 
     sendChatBtn.disabled = false;
-    sendChatBtn.textContent = "Send";
+
+    sendChatBtn.textContent =
+      "Send";
 
     chatInput.focus();
 
@@ -518,130 +1018,287 @@ function addChatMessage(
   text
 ) {
 
+  refreshChatElements();
+
+
+  if (!chatBox) return;
+
+
   const message =
     document.createElement("div");
 
-  message.className =
-    type === "user"
-      ? "user-message"
-      : "ai-message";
 
-  message.textContent = text;
+  message.style.padding =
+    "10px";
+
+
+  message.style.marginBottom =
+    "10px";
+
+
+  message.style.borderRadius =
+    "12px";
+
+
+  message.style.background =
+    type === "user"
+      ? "#e8d5ff"
+      : "#d7f6c7";
+
+
+  message.innerHTML = `
+
+    <strong>
+      ${
+        type === "user"
+          ? "You"
+          : "Ronjita English Coach"
+      }
+    </strong>
+
+    <p style="white-space:pre-line;">
+      ${escapeHTML(text)}
+    </p>
+
+  `;
+
 
   chatBox.appendChild(message);
+
 
   chatBox.scrollTop =
     chatBox.scrollHeight;
 
+
+  chatHistory.push({
+
+    role:
+      type === "user"
+        ? "User"
+        : "Coach",
+
+    text
+
+  });
+
 }
 
 
-byeBtn.addEventListener(
-  "click",
-  () => {
+/* =========================================================
+   12. BYE
+========================================================= */
 
-    addChatMessage(
-      "ai",
-      "Goodbye Ronjita! 👋 See you next time."
-    );
+if (byeBtn) {
 
-    chatHistory = [];
+  byeBtn.addEventListener(
+    "click",
+    () => {
 
-    chatInput.disabled = true;
-    sendChatBtn.disabled = true;
-
-  }
-);
+      refreshChatElements();
 
 
-/* =========================================
-   WEEKLY EXAM
-========================================= */
+      addChatMessage(
+        "ai",
+        "Goodbye, Ronjita! 👋 See you next time. Keep practicing your English!"
+      );
+
+
+      chatHistory = [];
+
+
+      if (chatInput) {
+
+        chatInput.disabled = true;
+
+      }
+
+
+      if (sendChatBtn) {
+
+        sendChatBtn.disabled = true;
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   13. WEEKLY EXAM
+========================================================= */
 
 const startExamBtn =
-  document.getElementById("startExamBtn");
+  document.getElementById(
+    "startExamBtn"
+  );
+
 
 const examArea =
-  document.getElementById("examArea");
+  document.getElementById(
+    "examArea"
+  );
 
 
-startExamBtn.addEventListener(
-  "click",
-  generateExam
-);
+if (startExamBtn) {
+
+  startExamBtn.addEventListener(
+    "click",
+    generateExam
+  );
+
+}
 
 
 async function generateExam() {
 
-  if (vocabulary.length < 1) {
-
-    alert(
-      "First add some vocabulary."
-    );
-
-    return;
-  }
+  if (!examArea) return;
 
 
   startExamBtn.disabled = true;
+
   startExamBtn.textContent =
     "Creating exam...";
 
 
-  examArea.innerHTML =
-    `<div class="result">
-      Creating your weekly exam...
-    </div>`;
+  examArea.innerHTML = `
+
+    <div class="result">
+
+      🤖 Gemini is creating your weekly exam...
+
+    </div>
+
+  `;
 
 
   try {
 
-    const result =
-      await callWorker("exam", {
+    const saved =
+      JSON.parse(
+        localStorage.getItem(
+          "ronjitaDailyVocabulary"
+        )
+      );
 
-        vocabulary
 
-      });
+    const words =
+      saved?.words || [];
+
+
+    if (!words.length) {
+
+      throw new Error(
+        "আজকের vocabulary আগে তৈরি করো।"
+      );
+
+    }
+
+
+    const wordData =
+      words
+        .map(item =>
+          `${item.word} = ${item.bangla}`
+        )
+        .join("\n");
+
+
+    const prompt = `
+
+Create a 10-question English vocabulary exam.
+
+Use ONLY these vocabulary words:
+
+${wordData}
+
+Return ONLY valid JSON.
+
+Format:
+
+[
+  {
+    "question": "question text",
+    "answer": "correct answer",
+    "meaning": "short Bengali explanation"
+  }
+]
+
+Question types should be mixed:
+
+- Bengali meaning
+- English meaning
+- Fill in the blank
+- Vocabulary usage
+- Translation
+
+Exactly 10 questions.
+
+No markdown.
+No extra text.
+
+`;
+
+
+    const response =
+      await callGemini(prompt);
+
+
+    const clean =
+      response
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
 
 
     currentExam =
-      result.exam.questions || [];
+      JSON.parse(clean);
+
+
+    examResults = {};
 
 
     renderExam();
 
+
   } catch (error) {
 
-    examArea.innerHTML =
-      `<div class="result">
+    examArea.innerHTML = `
+
+      <div class="result">
+
+        ❌ Exam তৈরি করা যায়নি.
+
+        <br><br>
+
         ${escapeHTML(error.message)}
-      </div>`;
+
+      </div>
+
+    `;
 
   } finally {
 
     startExamBtn.disabled = false;
+
     startExamBtn.textContent =
-      "Generate Weekly Exam";
+      "Start Weekly Exam";
 
   }
 
 }
 
 
+/* =========================================================
+   14. RENDER EXAM
+========================================================= */
+
 function renderExam() {
 
+  if (!examArea) return;
+
+
   examArea.innerHTML = "";
-
-  if (!currentExam.length) {
-
-    examArea.innerHTML =
-      `<div class="result">
-        No questions were generated.
-      </div>`;
-
-    return;
-
-  }
 
 
   currentExam.forEach(
@@ -650,8 +1307,10 @@ function renderExam() {
       const box =
         document.createElement("div");
 
+
       box.className =
         "exam-question";
+
 
       box.innerHTML = `
 
@@ -677,10 +1336,10 @@ function renderExam() {
 
         <div
           id="exam-result-${index}"
-          class="exam-result"
         ></div>
 
       `;
+
 
       examArea.appendChild(box);
 
@@ -697,7 +1356,9 @@ function renderExam() {
         () => {
 
           checkExamAnswer(
-            Number(button.dataset.index)
+            Number(
+              button.dataset.index
+            )
           );
 
         }
@@ -705,145 +1366,46 @@ function renderExam() {
 
     });
 
+
+  const finishButton =
+    document.createElement("button");
+
+
+  finishButton.className =
+    "primary";
+
+
+  finishButton.textContent =
+    "Calculate Final Score";
+
+
+  finishButton.addEventListener(
+    "click",
+    calculateExamScore
+  );
+
+
+  examArea.appendChild(
+    finishButton
+  );
+
 }
 
+
+/* =========================================================
+   15. CHECK EXAM ANSWER
+========================================================= */
 
 async function checkExamAnswer(index) {
 
   const question =
     currentExam[index];
 
+
   const answerBox =
     document.getElementById(
       `answer-${index}`
     );
 
-  const resultBox =
-    document.getElementById(
-      `exam-result-${index}`
-    );
 
-
-  const userAnswer =
-    answerBox.value.trim();
-
-
-  if (!userAnswer) {
-
-    alert("Write your answer first.");
-
-    return;
-
-  }
-
-
-  const button =
-    answerBox
-      .parentElement
-      .querySelector(".exam-submit");
-
-
-  button.disabled = true;
-
-  resultBox.textContent =
-    "Checking answer...";
-
-
-  try {
-
-    const result =
-      await callWorker(
-        "checkExam",
-        {
-
-          question:
-            question.question,
-
-          correctAnswer:
-            question.answer,
-
-          userAnswer,
-
-          meaning:
-            question.meaning
-
-        }
-      );
-
-
-    resultBox.textContent =
-      result.text;
-
-
-    stats.exams++;
-
-    saveStats();
-
-    updateStats();
-
-  } catch (error) {
-
-    resultBox.textContent =
-      error.message;
-
-  } finally {
-
-    button.disabled = false;
-
-  }
-
-}
-
-
-/* =========================================
-   PROGRESS
-========================================= */
-
-function updateStats() {
-
-  document.getElementById(
-    "wordCount"
-  ).textContent =
-    vocabulary.length;
-
-  document.getElementById(
-    "sentenceCount"
-  ).textContent =
-    stats.sentences;
-
-  document.getElementById(
-    "examCount"
-  ).textContent =
-    stats.exams;
-
-  document.getElementById(
-    "bestScore"
-  ).textContent =
-    `${stats.bestScore || 0}%`;
-
-}
-
-
-/* =========================================
-   SECURITY / HTML ESCAPE
-========================================= */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================
-   INITIAL LOAD
-========================================= */
-
-renderVocabulary();
-
-updateStats();
+  const res
