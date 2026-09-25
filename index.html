@@ -16,24 +16,22 @@
 
   <h1>Ronjita English Coach</h1>
 
-  <p>
-    Learn vocabulary • Build sentences • Talk with AI • Test yourself
-  </p>
+  <p>Learn • Practice • Test • Improve</p>
 </header>
 
 
 <nav class="tabs">
 
-  <button class="tab active" data-tab="vocabulary">
+  <button class="tab active" data-tab="home">
+    🏠 Home
+  </button>
+
+  <button class="tab" data-tab="vocabulary">
     📚 Vocabulary
   </button>
 
-  <button class="tab" data-tab="sentence">
-    ✍️ Sentence Checker
-  </button>
-
-  <button class="tab" data-tab="coach">
-    🤖 AI Coach
+  <button class="tab" data-tab="practice">
+    ✍️ Sentence Practice
   </button>
 
   <button class="tab" data-tab="exam">
@@ -49,59 +47,90 @@
 
 <main>
 
+<!-- HOME -->
 
-<!-- ================= VOCABULARY ================= -->
-
-<section id="vocabulary" class="section active">
+<section id="home" class="section active">
 
   <div class="card sticky yellow">
 
-    <h2>📚 My Vocabulary</h2>
+    <h2>🌸 Welcome, Ronjita!</h2>
 
-    <p>Add a new English word.</p>
+    <p>
+      Every day learn 10 new English words,
+      practice sentences and test yourself.
+    </p>
 
-    <div class="input-row">
+    <div class="today-box">
 
-      <input
-        id="wordInput"
-        type="text"
-        placeholder="Example: beautiful"
-      >
+      <strong>Today's Learning</strong>
 
-      <button id="addWordBtn" class="primary">
-        Add Word
-      </button>
+      <p id="todayText"></p>
 
     </div>
 
   </div>
 
 
+  <div class="card sticky pink">
+
+    <h2>🎯 Today's Goal</h2>
+
+    <ul>
+      <li>Learn 10 new vocabulary words</li>
+      <li>Practice your own sentences</li>
+      <li>Take your weekly exam</li>
+    </ul>
+
+  </div>
+
+</section>
+
+
+<!-- VOCABULARY -->
+
+<section id="vocabulary" class="section">
+
+  <div class="card sticky yellow">
+
+    <h2>📚 Today's 10 Vocabulary</h2>
+
+    <p>
+      These words are available for today's lesson.
+    </p>
+
+  </div>
+
   <div id="vocabularyList" class="vocab-grid"></div>
 
 </section>
 
 
+<!-- SENTENCE PRACTICE -->
 
-<!-- ================= SENTENCE CHECKER ================= -->
+<section id="practice" class="section">
 
-<section id="sentence" class="section">
+  <div class="card sticky blue">
 
-  <div class="card sticky pink">
-
-    <h2>✍️ Sentence Checker</h2>
+    <h2>✍️ Sentence Practice</h2>
 
     <p>
-      Use your vocabulary and write your own sentence.
+      Choose a vocabulary word and write your own sentence.
     </p>
+
+    <select id="wordSelect">
+      <option value="">Choose a word</option>
+    </select>
 
     <textarea
       id="sentenceInput"
-      placeholder="Write your English sentence here..."
+      placeholder="Write your own English sentence..."
     ></textarea>
 
-    <button id="checkSentenceBtn" class="primary">
-      Check My Sentence
+    <button
+      id="checkSentenceBtn"
+      class="primary"
+    >
+      Check Sentence
     </button>
 
     <div id="sentenceResult"></div>
@@ -111,68 +140,23 @@
 </section>
 
 
-
-<!-- ================= AI COACH ================= -->
-
-<section id="coach" class="section">
-
-  <div class="card sticky blue">
-
-    <h2>🤖 AI English Coach</h2>
-
-    <p>
-      Talk with your AI English coach in English.
-    </p>
-
-    <div id="chatBox" class="chat-box">
-
-      <div class="ai-message">
-        Hello Ronjita! 👋 How are you today?
-        What would you like to learn today?
-      </div>
-
-    </div>
-
-
-    <div class="chat-input-row">
-
-      <input
-        id="chatInput"
-        type="text"
-        placeholder="Type your message..."
-      >
-
-      <button id="sendChatBtn" class="primary">
-        Send
-      </button>
-
-    </div>
-
-
-    <button id="byeBtn" class="danger">
-      👋 Bye / End Conversation
-    </button>
-
-  </div>
-
-</section>
-
-
-
-<!-- ================= EXAM ================= -->
+<!-- EXAM -->
 
 <section id="exam" class="section">
 
   <div class="card sticky green">
 
-    <h2>📝 Weekly Vocabulary Exam</h2>
+    <h2>📝 Weekly Exam</h2>
 
     <p>
-      Your exam will be created from your saved vocabulary.
+      Test yourself using this week's vocabulary.
     </p>
 
-    <button id="startExamBtn" class="primary">
-      Generate Weekly Exam
+    <button
+      id="startExamBtn"
+      class="primary"
+    >
+      Start Weekly Exam
     </button>
 
     <div id="examArea"></div>
@@ -182,8 +166,7 @@
 </section>
 
 
-
-<!-- ================= PROGRESS ================= -->
+<!-- PROGRESS -->
 
 <section id="progress" class="section">
 
@@ -194,23 +177,18 @@
     <div class="stats">
 
       <div class="stat">
-        <strong id="wordCount">0</strong>
-        <span>Vocabulary</span>
+        <strong id="wordsLearned">0</strong>
+        <span>Words Learned</span>
       </div>
 
       <div class="stat">
-        <strong id="sentenceCount">0</strong>
-        <span>Sentences Checked</span>
+        <strong id="sentencesChecked">0</strong>
+        <span>Sentences Practiced</span>
       </div>
 
       <div class="stat">
-        <strong id="examCount">0</strong>
-        <span>Exams</span>
-      </div>
-
-      <div class="stat">
-        <strong id="bestScore">0%</strong>
-        <span>Best Score</span>
+        <strong id="examScore">0%</strong>
+        <span>Best Exam Score</span>
       </div>
 
     </div>
@@ -223,15 +201,11 @@
 
 
 <footer>
-
-  <p>
-    Made with ❤️ for Ronjita's English learning journey.
-  </p>
-
+  <p>Made with ❤️ by Ronjita</p>
 </footer>
 
 
 <script src="script.js"></script>
 
 </body>
-    </html>
+          </html>
