@@ -3,54 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ronjita English Coach</title>
+  <title>Ronjita Coaching Center</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <small>✨ Creator: Ronjita</small>
-    <h1>Ronjita English Coach</h1>
-    <div class="score-board">🏆 Total Points: <span id="totalPoints">0</span></div>
+    <small>✨ Founder & Creator: Ronjita</small>
+    <h1>Ronjita Coaching Center</h1>
+    <p>একাদশ-দ্বাদশ শ্রেণী • HSC MCQs & English Learning Zone</p>
   </div>
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('vocabSection', this)">Vocabulary & Practice</button>
-    <button class="tab" onclick="switchTab('statsSection', this)">My Progress</button>
+    <button class="tab active" onclick="switchTab('hscSection', this)">📚 HSC MCQ Test</button>
+    <button class="tab" onclick="switchTab('vocabSection', this)">📖 Daily Vocabulary</button>
+    <button class="tab" onclick="switchTab('sentenceSection', this)">✍️ Smart Grammar Checker</button>
   </div>
 
-  <!-- VOCABULARY & PRACTICE SECTION -->
-  <div id="vocabSection" class="section active">
-    <h3>📚 Today's Vocabulary List (25+ Words)</h3>
-    <div id="vocabularyList" class="vocab-container"></div>
-
-    <div class="practice-box">
-      <h3>✍️ Sentence Practice Zone</h3>
-      <p>যেকোনো শব্দ দিয়ে নিজে বাক্য তৈরি করুন এবং পয়েন্ট অর্জন করুন:</p>
-      
-      <div class="input-group">
-        <textarea id="sentenceInput" rows="3" placeholder="Click mic to speak or type your sentence..."></textarea>
-        <button id="voiceBtn" onclick="startVoiceInput()" class="mic-btn">🎙️ Voice</button>
-      </div>
-
-      <button onclick="checkAndAddSentence()" class="primary">Send & Check Sentence</button>
-      <div id="feedbackResult"></div>
+  <!-- HSC MCQ SECTION -->
+  <div id="hscSection" class="section active">
+    <h3>🎓 বিষয় ও অধ্যায় নির্বাচন করুন</h3>
+    <div class="form-group">
+      <label>বিষয় বেছে নিন:</label>
+      <select id="subjectSelect">
+        <option value="Economics 1st Paper">অর্থনীতি ১ম পত্র</option>
+        <option value="Economics 2nd Paper">অর্থনীতি ২য় পত্র</option>
+        <option value="Psychology 1st Paper">মনোবিজ্ঞান ১ম পত্র</option>
+        <option value="Psychology 2nd Paper">মনোবিজ্ঞান ২য় পত্র</option>
+        <option value="Geography 1st Paper">ভূগোল ১ম পত্র</option>
+        <option value="Geography 2nd Paper">ভূগোল ২য় পত্র</option>
+        <option value="Islamic History 1st Paper">ইসলামের ইতিহাস ও সংস্কৃতি ১ম পত্র</option>
+        <option value="Islamic History 2nd Paper">ইসলামের ইতিহাস ও সংস্কৃতি ২য় পত্র</option>
+      </select>
     </div>
+
+    <div class="form-group">
+      <label>অধ্যায় বেছে নিন:</label>
+      <select id="chapterSelect">
+        <option value="Chapter 1">১ম অধ্যায়</option>
+        <option value="Chapter 2">২য় অধ্যায়</option>
+        <option value="Chapter 3">৩য় অধ্যায়</option>
+        <option value="Chapter 4">৪র্থ অধ্যায়</option>
+        <option value="Chapter 5">৫ম অধ্যায়</option>
+        <option value="Chapter 6">৬ষ্ঠ অধ্যায়</option>
+        <option value="Chapter 7">৭ম অধ্যায়</option>
+      </select>
+    </div>
+
+    <button class="primary" onclick="generateMCQs()">✨ ১৫টি MCQ প্রশ্ন তৈরি করুন</button>
+
+    <div id="mcqContainer" style="margin-top: 20px;"></div>
   </div>
 
-  <!-- PROGRESS SECTION -->
-  <div id="statsSection" class="section">
-    <h3>📊 Your Daily Progress</h3>
-    <div class="card">
-      <p><strong>Total Practice Score:</strong> <span id="statPoints">0</span> Points</p>
-      <p><strong>Sentences Created:</strong> <span id="statSentences">0</span></p>
-      <p><strong>Status:</strong> <span id="userLevel">Beginner Learner</span></p>
+  <!-- DAILY VOCABULARY SECTION -->
+  <div id="vocabSection" class="section">
+    <h3>📖 Daily New Vocabulary</h3>
+    <p>বাটনে চাপ দিলেই AI থেকে প্রতিদিন নতুন ১০টি শব্দ, অর্থ ও উদাহরণ চলে আসবে:</p>
+    <button class="primary" onclick="generateVocab()">✨ Generate 10 New Words</button>
+    <div id="vocabContainer" style="margin-top: 15px;"></div>
+  </div>
+
+  <!-- SMART SENTENCE CHECKER SECTION -->
+  <div id="sentenceSection" class="section">
+    <h3>✍️ English Sentence Practice & Correction</h3>
+    <div class="input-group">
+      <textarea id="sentenceInput" rows="3" placeholder="ইংরেজিতে বাক্য লিখুন অথবা মাইক্রোফোনে বলুন..."></textarea>
+      <button id="micBtn" class="mic-btn" onclick="startVoiceInput()">🎙️ Voice</button>
     </div>
+    <button class="primary" onclick="checkSentence()">Check Sentence & Fix Errors</button>
+    <div id="sentenceResult" style="margin-top: 15px;"></div>
   </div>
 </div>
 
 <script src="script.js"></script>
 </body>
-</html>
+      </html>
+      
