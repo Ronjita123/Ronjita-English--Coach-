@@ -1,89 +1,84 @@
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f4f6f9;
+  background: #f0f4f8;
   margin: 0;
   padding: 15px;
 }
 
 .container {
-  max-width: 650px;
+  max-width: 680px;
   margin: 0 auto;
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .header {
   text-align: center;
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 
-.score-board {
-  background: rgba(255,255,255,0.2);
-  padding: 8px 15px;
-  border-radius: 20px;
-  display: inline-block;
-  font-weight: bold;
-  font-size: 16px;
-  margin-top: 8px;
+.header h1 {
+  margin: 5px 0;
+  font-size: 24px;
+}
+
+.header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 20px;
+  overflow-x: auto;
 }
 
 .tab {
   flex: 1;
   padding: 12px;
   border: none;
-  background: #eef1f6;
+  background: #e2e8f0;
   cursor: pointer;
   border-radius: 6px;
   font-weight: bold;
+  white-space: nowrap;
+  font-size: 13px;
 }
 
 .tab.active {
-  background: #6e8efb;
+  background: #4f46e5;
   color: white;
 }
 
 .section { display: none; }
 .section.active { display: block; }
 
-.vocab-container {
-  max-height: 280px;
-  overflow-y: auto;
-  border: 1px solid #e2e8f0;
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #334155;
+}
+
+select, textarea {
+  width: 100%;
   padding: 10px;
-  border-radius: 8px;
-  background: #fafafa;
-  margin-bottom: 20px;
-}
-
-.vocab-item {
-  background: white;
-  padding: 10px 14px;
-  margin-bottom: 8px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
-  border-left: 4px solid #6e8efb;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.vocab-item strong { color: #2d3748; font-size: 16px; }
-.vocab-item p { margin: 4px 0 0 0; color: #4a5568; font-size: 14px; }
-
-.practice-box {
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  font-size: 15px;
 }
 
 .input-group {
@@ -91,21 +86,11 @@ body {
   margin-bottom: 10px;
 }
 
-textarea {
-  width: 100%;
-  padding: 10px;
-  padding-right: 70px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  box-sizing: border-box;
-  font-size: 15px;
-}
-
 .mic-btn {
   position: absolute;
   right: 8px;
   top: 8px;
-  background: #ff4757;
+  background: #ef4444;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -115,7 +100,7 @@ textarea {
 }
 
 button.primary {
-  background: #2ed573;
+  background: #4f46e5;
   color: white;
   border: none;
   padding: 12px;
@@ -123,29 +108,32 @@ button.primary {
   cursor: pointer;
   width: 100%;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 15px;
+}
+
+button.primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
 }
 
 .card {
-  background: #f1f5f9;
+  background: #f8fafc;
   padding: 15px;
   border-radius: 8px;
-  margin-top: 10px;
+  border-left: 4px solid #4f46e5;
+  margin-top: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
 }
 
-.feedback-success {
-  background: #d4edda;
-  color: #155724;
+.mcq-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
   padding: 12px;
-  border-radius: 6px;
-  margin-top: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
-.feedback-error {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 6px;
-  margin-top: 10px;
-  }
-  
+.mcq-card p {
+  font-weight: bold;
+  margin-top: 0;
+}
