@@ -1,12 +1,12 @@
 /* =========================================
    1. GEMINI API CONFIGURATION
 ========================================= */
-const KEY_PART1 = "AQ.Ab8RN6Itxz_SuqH-6jNOayNdP2yZ";
-const KEY_PART2 = "_1qm3LXfQHwOnQ8OnTqf0g";
+const KEY_PART1 = "AQ.Ab8RN6IYLYiiBdruQpL0FKdC-RbZ";
+const KEY_PART2 = "upsIzHocg-VU4qTlcGkLoQ";
 const GEMINI_API_KEY = KEY_PART1 + KEY_PART2;
 
 async function callGemini(prompt) {
-  // Updated to gemini-3.8-flash model
+  // Using Gemini 2.5 Flash Model
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   const response = await fetch(url, {
@@ -17,7 +17,7 @@ async function callGemini(prompt) {
 
   const data = await response.json();
   if (!response.ok || !data.candidates || !data.candidates[0]) {
-    throw new Error(data.error?.message || "API Key-te samasya dekha diyeche. Daya kore page-ti refresh korun.");
+    throw new Error(data.error?.message || "API Key বা সার্ভারে সমস্যা দেখা দিয়েছে। দয়া করে পেজটি রিফ্রেশ করুন।");
   }
 
   return data.candidates[0].content.parts[0].text;
@@ -157,7 +157,7 @@ Guidelines:
 ========================================= */
 function startVoiceInput() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("আপনার ব্রাউজারে ভয়েস টাইপিং সাপোর্ট করছে না। Chrome ব্রাউজার ব্যবহার করুন।");
+    alert("আপনার ব্রাউজারে ভয়েস টাইপিং সাপোর্ট করছে না। Chrome ব্রাউজার ব্যবহার করুন।");
     return;
   }
 
