@@ -1,38 +1,24 @@
 /* =========================================
-   1. HSC MCQ DATABASE & GENERATOR
+   1. GEMINI API CONFIGURATION
 ========================================= */
-const mcqDatabase = {
-  "Economics 1st Paper": {
-    "Chapter 1": [
-      {
-        q: "১. 'Economics is the science of scarcity and choice'— উক্তিটি কার?",
-        options: ["A) অ্যাডাম স্মিথ", "B) এল রবিন্স", "C) আলফ্রেড মার্শাল", "D) পল স্যামুয়েলসন"],
-        ans: "B) এল রবিন্স",
-        exp: "অধ্যাপক এল. রবিন্স ১৯৩১ সালে প্রকাশিত তাঁর গ্রন্থে অর্থনীতিকে দুষ্প্রাপ্যতা ও অসীম চাহিদার নির্বাচনের বিজ্ঞান হিসেবে সংজ্ঞায়িত করেছেন।"
-      },
-      {
-        q: "২. অর্থনৈতিক সমস্যার মূল কারণ কোনটি?",
-        options: ["A) সম্পদের অসীমতা", "B) চাহিদার সীমাবদ্ধতা", "C) সম্পদের দুষ্প্রাপ্যতা", "D) অর্থমূল্যের অভাব"],
-        ans: "C) সম্পদের দুষ্প্রাপ্যতা",
-        exp: "মানুষের অভাব অসীম কিন্তু তা পূরণের সম্পদ সীমিত বা দুষ্প্রাপ্য, এটাই মূল সমস্যা।"
-      },
-      {
-        q: "৩. সুযোগ ব্যয় (Opportunity Cost) ধারণাটি মূলত কিসের সাথে সম্পর্কিত?",
-        options: ["A) উৎপাদন সম্ভাবনা রেখা", "B) চাহিদা রেখা", "C) যোগান রেখা", "D) ভোগ রেখা"],
-        ans: "A) উৎপাদন সম্ভাবনা রেখা",
-        exp: "উৎপাদন সম্ভাবনা রেখার মাধ্যমে একটি দ্রব্যের অতিরিক্ত উৎপাদনের জন্য অন্য দ্রব্যের কতটুকু ছেড়ে দিতে হয় (সুযোগ ব্যয়) তা দেখানো হয়।"
-      }
-    ]
-  }
-};
+const GEMINI_API_KEY = "AQ.Ab8RN6IZcFLq8MJ69-dscGlI3OlY3_0o1XMZjUOnkjEW3OmOXg";
 
-const vocabDatabase = [
-  { word: "Scarcity (noun)", pronounce: "স্কার্সিটি", meaning: "দুষ্প্রাপ্যতা / স্বল্পতা", example: "The scarcity of resources is a major economic problem." },
-  { word: "Abundant (adjective)", pronounce: "অ্যাবান্ড্যান্ট", meaning: "প্রচুর / প্রাচুর্যময়", example: "Bangladesh has abundant natural water resources." },
-  { word: "Fluctuate (verb)", pronounce: "ফ্লাকচুয়েট", meaning: "উঠানামা করা", example: "Prices of vegetables fluctuate every week." },
-  { word: "Enhance (verb)", pronounce: "ইনহ্যান্স", meaning: "বৃদ্ধি করা / উন্নত করা", example: "Reading books helps to enhance your knowledge." },
-  { word: "Pragmatic (adjective)", pronounce: "প্র্যাগম্যাটিক", meaning: "বাস্তবসম্মত", example: "We need a pragmatic approach to solve this issue." }
-];
+async function callGemini(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.candidates || !data.candidates[0]) {
+    throw new Error(data.error?.message || "Errur fl-API Key. Jekk jogħġbok iċċekkja mill-ġdid.");
+  }
+
+  return data.candidates[0].content.parts[0].text;
+}
 
 /* =========================================
    2. TAB SWITCHING
@@ -41,125 +27,193 @@ function switchTab(sectionId, btnElement) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
 
-  document.getElementById(sectionId).classList.add('active');
-  btnElement.classList.add('active');
+  const targetSection = document.getElementById(sectionId);
+  if (targetSection) targetSection.classList.add('active');
+  if (btnElement) btnElement.classList.add('active');
 }
 
 /* =========================================
-   3. GENERATE MCQs
+   3. HSC MCQ GENERATOR (20 NEW QUESTIONS)
 ========================================= */
-function generateMCQs() {
-  const subject = document.getElementById("subjectSelect").value;
-  const chapter = document.getElementById("chapterSelect").value;
+async function generateMCQs() {
+  const subjectSelect = document.getElementById("subjectSelect");
+  const chapterSelect = document.getElementById("chapterSelect");
   const container = document.getElementById("mcqContainer");
 
-  let questions = (mcqDatabase[subject] && mcqDatabase[subject][chapter]) ? mcqDatabase[subject][chapter] : null;
+  const subject = subjectSelect ? subjectSelect.value : "Economics";
+  const chapter = chapterSelect ? chapterSelect.value : "1st Chapter";
 
-  if (!questions) {
-    container.innerHTML = `
-      <div class="card">
-        <h4>📚 ${subject} - ${chapter}</h4>
-        <div class="mcq-card">
-          <p><b>১. অসীম অভাব ও সীমিত সম্পদের সমন্বয় সাধনের প্রক্রিয়াকে কী বলে?</b></p>
-          <p>A) বণ্টন<br>B) নির্বাচন<br>C) উৎপাদন<br>D) ভোগ</p>
-          <p style="color:green;"><b>সঠিক উত্তর: B) নির্বাচন</b></p>
-          <small><b>ব্যাখ্যা:</b> সীমিত সম্পদ দিয়ে কোন অভাবটি আগে পূরণ করা হবে তা বাছাই করাকেই নির্বাচন বলে।</small>
-        </div>
-        <div class="mcq-card">
-          <p><b>২. ধনতান্ত্রিক অর্থব্যবস্থায় উৎপাদনের উপাদানের মালিক কে?</b></p>
-          <p>A) সরকার<br>B) বেসরকারি ব্যক্তি<br>C) সমাজ<br>D) যৌথ মালিকানা</p>
-          <p style="color:green;"><b>সঠিক উত্তর: B) বেসরকারি ব্যক্তি</b></p>
-          <small><b>ব্যাখ্যা:</b> ধনতান্ত্রিক অর্থব্যবস্থায় ব্যক্তিস্বাধীনতা ও ব্যক্তিগত মালিকানা থাকে।</small>
-        </div>
-      </div>`;
+  container.innerHTML = `<div class="card"><b>${subject} (${chapter})</b>: Qed jiġu ġġenerati 20 mistoqsija MCQ ġodda... Jekk jogħġbok stenna ftit sekondi.</div>`;
+
+  try {
+    const randomSeed = Math.random();
+    const prompt = `Act as an expert HSC Teacher in Bangladesh. Generate 20 UNIQUE and NEW multiple-choice questions (MCQs) in Bengali for Higher Secondary subject "${subject}", "${chapter}". (Random seed: ${randomSeed})
+Format each question clearly in Markdown:
+**১. [Mistoqsija]**
+A) [Opzjoni 1]
+B) [Opzjoni 2]
+C) [Opzjoni 3]
+D) [Opzjoni 4]
+**সঠিক উত্তর:** [Opzjoni Tattika]
+**ব্যাখ্যা:** [Spjegazzjoni qasira bil-Bengali]
+---`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;"><b>Errur:</b> ${error.message}</div>`;
+  }
+}
+
+/* =========================================
+   4. DAILY VOCABULARY GENERATOR (15 NEW WORDS)
+========================================= */
+async function generateVocab() {
+  const container = document.getElementById("vocabContainer");
+  container.innerHTML = `<div class="card">Qed jitgħabbew 15-il kelma vokabolarju ġodda minn AI...</div>`;
+
+  try {
+    const randomSeed = Math.random();
+    const prompt = `Generate 15 completely NEW and UNIQUE daily-use English vocabulary words for HSC students learning English. (Seed: ${randomSeed})
+Include: Word, Pronunciation, English Meaning, Bengali Meaning, and an Example Sentence for each. Format nicely with Markdown.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;"><b>Errur:</b> ${error.message}</div>`;
+  }
+}
+
+/* =========================================
+   5. FRIDAY VOCABULARY & GRAMMAR EXAM
+========================================= */
+async function generateFridayExam() {
+  const container = document.getElementById("examContainer");
+  if (!container) return;
+
+  const today = new Date();
+  const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+
+  container.innerHTML = `<div class="card">Qed jiġi ppreparat it-test tal-Ingliż tal-ġimgħa...</div>`;
+
+  try {
+    const prompt = `Act as an English Tutor. Create a Weekly Practice Exam for an HSC student in Bangladesh (Target day: Friday/Weekly Test).
+Include:
+1. 5 Vocabulary Quiz Questions (Fill in the blanks or Choose correct meaning).
+2. 5 Sentence Translation/Correction Exercises.
+3. Provide Answer Key at the bottom hidden under a clear spoiler tag or section.
+Format with clean Markdown.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">
+      <h3>📝 Weekly English Practice Exam (${dayName})</h3>
+      ${formatText(response)}
+    </div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;"><b>Errur:</b> ${error.message}</div>`;
+  }
+}
+
+/* =========================================
+   6. AI ENGLISH TUTOR & GENERAL KNOWLEDGE CHAT
+========================================= */
+async function askAIAssistant() {
+  const inputEl = document.getElementById("aiChatInput");
+  const container = document.getElementById("aiChatResult");
+
+  if (!inputEl || !inputEl.value.trim()) {
+    alert("Jekk jogħġbok ikteb xi ħaġa jew saqsi mistoqsija!");
     return;
   }
 
-  let html = `<div class="card"><h4>📚 ${subject} - ${chapter}</h4>`;
-  questions.forEach(item => {
-    html += `
-      <div class="mcq-card">
-        <p><b>${item.q}</b></p>
-        <p>${item.options.join('<br>')}</p>
-        <p style="color:green;"><b>সঠিক উত্তর: ${item.ans}</b></p>
-        <small><b>ব্যাখ্যা:</b> ${item.exp}</small>
-      </div>`;
-  });
-  html += `</div>`;
-  container.innerHTML = html;
+  const userQuery = inputEl.value.trim();
+  container.innerHTML = `<div class="card">Qed nipproċessa l-mistoqsija tiegħek...</div>`;
+
+  try {
+    const prompt = `You are a helpful AI Assistant & English Learning Coach for a student in Bangladesh.
+User Question / Input: "${userQuery}"
+
+Guidelines:
+1. If the user asks in English, reply in clear, simple, and grammatically accurate English to encourage learning.
+2. If the user asks a General Knowledge or outside subject question, answer it clearly and accurately.
+3. If there are grammar mistakes in user's query, gently correct them at the end.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">
+      <b>Tiegħek:</b> ${escapeHTML(userQuery)}<br><br>
+      <b>AI Assistant:</b><br>${formatText(response)}
+    </div>`;
+    inputEl.value = "";
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;"><b>Errur:</b> ${error.message}</div>`;
+  }
 }
 
 /* =========================================
-   4. GENERATE VOCABULARY
-========================================= */
-function generateVocab() {
-  const container = document.getElementById("vocabContainer");
-  let html = `<div class="card"><h4>📖 Daily Selected Vocabulary</h4>`;
-  
-  vocabDatabase.forEach((item, index) => {
-    html += `
-      <div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
-        <b>${index + 1}. ${item.word}</b> [${item.pronounce}]<br>
-        <span><b>অর্থ:</b> ${item.meaning}</span><br>
-        <small style="color: #4f46e5;"><b>Example:</b> ${item.example}</small>
-      </div>`;
-  });
-  
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-/* =========================================
-   5. VOICE INPUT & GRAMMAR CHECKER
+   7. VOICE INPUT & SENTENCE CHECKER
 ========================================= */
 function startVoiceInput() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("আপনার ব্রাউজারে ভয়েস টাইপিং সাপোর্ট করছে না। Chrome ব্যবহার করুন।");
+    alert("Il-browser tiegħek ma jappoġġjax voice input. Jekk jogħġbok uża Google Chrome.");
     return;
   }
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = new SpeechRecognition();
+
   recognition.lang = 'en-US';
   const micBtn = document.getElementById("micBtn");
-  
-  micBtn.textContent = "🎙️ Listening...";
+  if (micBtn) micBtn.textContent = "🎙️ Listening...";
+
   recognition.start();
 
   recognition.onresult = function(event) {
-    document.getElementById("sentenceInput").value = event.results[0][0].transcript;
-    micBtn.textContent = "🎙️ Voice";
+    const sentenceInput = document.getElementById("sentenceInput");
+    if (sentenceInput) sentenceInput.value = event.results[0][0].transcript;
+    if (micBtn) micBtn.textContent = "🎙️ Voice";
   };
 
   recognition.onerror = function() {
-    alert("ভয়েস চিনতে সমস্যা হয়েছে, আবার বলুন।");
-    micBtn.textContent = "🎙️ Voice";
+    alert("Ma stajtx nifhem il-vuċi, ipprova mill-ġdid.");
+    if (micBtn) micBtn.textContent = "🎙️ Voice";
   };
 }
 
-function checkSentence() {
-  const input = document.getElementById("sentenceInput").value.trim();
+async function checkSentence() {
+  const inputEl = document.getElementById("sentenceInput");
   const container = document.getElementById("sentenceResult");
 
-  if (!input) {
-    alert("অনুগ্রহ করে কোনো বাক্য লিখুন।");
+  if (!inputEl || !inputEl.value.trim()) {
+    alert("Jekk jogħġbok ikteb jew għid sentenza l-ewwel.");
     return;
   }
 
-  let corrected = input;
-  let explanation = "আপনার বাক্যটি ব্যাকরণগতভাবে পর্যালোচনা করা হয়েছে।";
+  const input = inputEl.value.trim();
+  container.innerHTML = `<div class="card">Qed tiġi vverifikata s-sentenza...</div>`;
 
-  if (input.toLowerCase().includes("i want improve")) {
-    corrected = input.replace(/i want improve/i, "I want to improve");
-    explanation = "<b>ভুল:</b> 'want' এর পর মূল ভার্ব বসাতে 'to' (Infinitive) ব্যবহার করতে হয়। তাই 'want improve' না হয়ে 'want to improve' হবে।";
+  try {
+    const prompt = `Act as an English Grammar Teacher. Review this sentence written by a student: "${input}".
+1. Is it grammatically correct? (Yes/No)
+2. Show the corrected/natural version.
+3. Explain mistakes clearly in Bengali so the student can learn.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;"><b>Errur:</b> ${error.message}</div>`;
   }
+}
 
-  container.innerHTML = `
-    <div class="card">
-      <h4>✍️ Grammar Analysis Result</h4>
-      <p><b>আপনার বাক্য:</b> ${input}</p>
-      <p style="color: green;"><b>সঠিক বাক্য:</b> ${corrected}</p>
-      <p><small>${explanation}</small></p>
-    </div>`;
-   }
-   
+/* =========================================
+   8. HELPER FUNCTIONS
+========================================= */
+function escapeHTML(text) {
+  return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+}
+
+function formatText(text) {
+  return escapeHTML(text)
+    .replace(/\n/g, "<br>")
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+       }
+       
