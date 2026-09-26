@@ -1,14 +1,13 @@
 /* =========================================
    1. GEMINI API CONFIGURATION
 ========================================= */
-// GitHub Block এড়াতে API Key দুটি ভাগে ভাগ করে যুক্ত করা হয়েছে
 const KEY_PART1 = "AQ.Ab8RN6Itxz_SuqH-6jNOayNdP2yZ";
 const KEY_PART2 = "_1qm3LXfQHwOnQ8OnTqf0g";
 const GEMINI_API_KEY = KEY_PART1 + KEY_PART2;
 
 async function callGemini(prompt) {
-  // Latest Gemini 2.0 Flash Model URL
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // Updated to gemini-2.5-flash model
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -18,7 +17,7 @@ async function callGemini(prompt) {
 
   const data = await response.json();
   if (!response.ok || !data.candidates || !data.candidates[0]) {
-    throw new Error(data.error?.message || "API Key-তে সমস্যা দেখা দিয়েছে। দয়া করে পেজটি রিফ্রেশ করুন।");
+    throw new Error(data.error?.message || "API Key-te samasya dekha diyeche. Daya kore page-ti refresh korun.");
   }
 
   return data.candidates[0].content.parts[0].text;
@@ -47,7 +46,7 @@ async function generateMCQs() {
   const subject = subjectSelect ? subjectSelect.value : "Economics";
   const chapter = chapterSelect ? chapterSelect.value : "1st Chapter";
 
-  container.innerHTML = `<div class="card"><b>${subject} (${chapter})</b>: ২০টি সম্পূর্ণ নতুন MCQ প্রশ্ন তৈরি হচ্ছে, ১০-১৫ সেকেন্ড অপেক্ষা করুন...</div>`;
+  container.innerHTML = `<div class="card"><b>${subject} (${chapter})</b>: 20টি সম্পূর্ণ নতুন MCQ প্রশ্ন তৈরি হচ্ছে, 10-15 সেকেন্ড অপেক্ষা করুন...</div>`;
 
   try {
     const randomSeed = Math.random();
@@ -74,7 +73,7 @@ D) [অপশন ৪]
 ========================================= */
 async function generateVocab() {
   const container = document.getElementById("vocabContainer");
-  container.innerHTML = `<div class="card">AI থেকে একদম নতুন ১৫টি শব্দ লোড হচ্ছে, অপেক্ষা করুন...</div>`;
+  container.innerHTML = `<div class="card">AI থেকে একদম নতুন 15টি শব্দ লোড হচ্ছে, অপেক্ষা করুন...</div>`;
 
   try {
     const randomSeed = Math.random();
@@ -219,5 +218,4 @@ function formatText(text) {
   return escapeHTML(text)
     .replace(/\n/g, "<br>")
     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-   }
-     
+}
