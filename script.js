@@ -1,54 +1,23 @@
 /* =========================================
-   1. VOCABULARY DATABASE (25+ WORDS)
+   1. GEMINI API CONFIGURATION
 ========================================= */
-const vocabularyData = [
-  { word: "Achieve", meaning: "অর্জন করা", example: "I want to achieve my goals." },
-  { word: "Improve", meaning: "উন্নতি করা", example: "Practice helps to improve English." },
-  { word: "Confidence", meaning: "আত্মবিশ্বাস", example: "Speak with confidence." },
-  { word: "Fluency", meaning: "সাবলীলতা", example: "Reading books improves fluency." },
-  { word: "Patience", meaning: "ধৈর্য", example: "Patience is key to success." },
-  { word: "Opportunity", meaning: "সুযোগ", example: "Grab every good opportunity." },
-  { word: "Knowledge", meaning: "জ্ঞান", example: "Knowledge is power." },
-  { word: "Determine", meaning: "সংকল্প করা", example: "She is determined to learn." },
-  { word: "Encourage", meaning: "উৎসাহ দেওয়া", example: "Always encourage others." },
-  { word: "Succeed", meaning: "সফল হওয়া", example: "Hard work helps to succeed." },
-  { word: "Challenge", meaning: "চ্যালেঞ্জ / চ্যালেঞ্জ নেওয়া", example: "Accept every challenge bravely." },
-  { word: "Describe", meaning: "বর্ণনা করা", example: "Describe your daily routine." },
-  { word: "Express", meaning: "প্রকাশ করা", example: "Express your ideas clearly." },
-  { word: "Habit", meaning: "অভ্যাস", example: "Reading is a good habit." },
-  { word: "Inspire", meaning: "অনুপ্রাণিত করা", example: "Her story inspired everyone." },
-  { word: "Journey", meaning: "যাত্রা", example: "Learning is a lifelong journey." },
-  { word: "Mistake", meaning: "ভুল", example: "Learn from your mistakes." },
-  { word: "Practice", meaning: "অনুশীলন", example: "Daily practice makes perfect." },
-  { word: "Quality", meaning: "গুণমান / যোগ্যতা", example: "Focus on quality work." },
-  { word: "Respect", meaning: "শ্রদ্ধা করা", example: "Respect your teachers." },
-  { word: "Support", meaning: "সাহায্য / সমর্থন করা", example: "Friends always support each other." },
-  { word: "Understand", meaning: "বুঝতে পারা", example: "I understand your point." },
-  { word: "Value", meaning: "মূল্য দেওয়া", example: "Value your precious time." },
-  { word: "Wisdom", meaning: "জ্ঞান / বুদ্ধিমত্তা", example: "Wisdom comes with experience." },
-  { word: "Explore", meaning: "নতুন কিছু খোঁজা বা জানা", example: "Explore new learning methods." }
-];
+const GEMINI_API_KEY = "AQ.Ab8RN6JSXiEHgXBDyIgY8J6z_WzThMb9yLKCd6TmHdmWOF66bw";
 
-let points = 0;
-let sentenceCount = 0;
+async function callGemini(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-// Load Vocabulary on Start
-window.onload = function() {
-  renderVocabList();
-};
-
-function renderVocabList() {
-  const listContainer = document.getElementById("vocabularyList");
-  listContainer.innerHTML = "";
-
-  vocabularyData.forEach((item, index) => {
-    listContainer.innerHTML += `
-      <div class="vocab-item">
-        <strong>${index + 1}. ${item.word}</strong> (${item.meaning})
-        <p><em>Example:</em> "${item.example}"</p>
-      </div>
-    `;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
   });
+
+  const data = await response.json();
+  if (!response.ok || !data.candidates || !data.candidates[0]) {
+    throw new Error(data.error?.message || "API Connect করা যাচ্ছে না। API Key যাচাই করুন।");
+  }
+
+  return data.candidates[0].content.parts[0].text;
 }
 
 /* =========================================
@@ -63,11 +32,56 @@ function switchTab(sectionId, btnElement) {
 }
 
 /* =========================================
-   3. VOICE TO TEXT INPUT
+   3. HSC MCQ GENERATOR
+========================================= */
+async function generateMCQs() {
+  const subject = document.getElementById("subjectSelect").value;
+  const chapter = document.getElementById("chapterSelect").value;
+  const container = document.getElementById("mcqContainer");
+
+  container.innerHTML = `<div class="card"><strong>${subject} (${chapter})</strong> থেকে ১৫টি গুরুত্বপূর্ণ MCQ তৈরি হচ্ছে, অপেক্ষা করুন...</div>`;
+
+  try {
+    const prompt = `Act as an expert HSC Teacher in Bangladesh. Generate 15 multiple-choice questions (MCQs) in Bengali for Higher Secondary subject "${subject}", "${chapter}".
+Format each question clearly in Markdown:
+Question Number. Question
+A) Option 1
+B) Option 2
+C) Option 3
+D) Option 4
+**সঠিক উত্তর:** [Correct Option]
+**ব্যাখ্যা:** [Short Bengali Explanation]`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;">ত্রুটি: ${error.message}</div>`;
+  }
+}
+
+/* =========================================
+   4. DAILY VOCABULARY GENERATOR
+========================================= */
+async function generateVocab() {
+  const container = document.getElementById("vocabContainer");
+  container.innerHTML = `<div class="card">নতুন ১০টি শব্দ তৈরি করা হচ্ছে...</div>`;
+
+  try {
+    const prompt = `Generate 10 fresh, daily-use English vocabulary words for learners. Include Word, Pronunciation, English Meaning, Bengali Meaning, and an Example Sentence for each. Format nicely with Markdown.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;">ত্রুটি: ${error.message}</div>`;
+  }
+}
+
+/* =========================================
+   5. VOICE INPUT & SMART SENTENCE CHECKER
 ========================================= */
 function startVoiceInput() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("Voice input is not supported in this browser. Try Chrome browser.");
+    alert("আপনার ব্রাউজারে ভয়েস টাইপিং সাপোর্ট করছে না। Chrome ব্রাউজার ব্যবহার করুন।");
     return;
   }
 
@@ -75,88 +89,55 @@ function startVoiceInput() {
   const recognition = new SpeechRecognition();
 
   recognition.lang = 'en-US';
-  recognition.interimResults = false;
-
-  const micBtn = document.getElementById("voiceBtn");
+  const micBtn = document.getElementById("micBtn");
   micBtn.textContent = "🎙️ Listening...";
 
   recognition.start();
 
   recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    document.getElementById("sentenceInput").value = transcript;
+    document.getElementById("sentenceInput").value = event.results[0][0].transcript;
     micBtn.textContent = "🎙️ Voice";
   };
 
   recognition.onerror = function() {
-    alert("Could not hear properly. Please try again.");
-    micBtn.textContent = "🎙️ Voice";
-  };
-
-  recognition.onend = function() {
+    alert("কথা ঠিকমতো বোঝা যায়নি, আবার চেষ্টা করুন।");
     micBtn.textContent = "🎙️ Voice";
   };
 }
 
+async function checkSentence() {
+  const input = document.getElementById("sentenceInput").value.trim();
+  const container = document.getElementById("sentenceResult");
+
+  if (!input) {
+    alert("অনুগ্রহ করে আগে কোনো বাক্য লিখুন বা বলুন।");
+    return;
+  }
+
+  container.innerHTML = `<div class="card">আপনার বাক্যটি পরীক্ষা করা হচ্ছে...</div>`;
+
+  try {
+    const prompt = `Act as an English Grammar Teacher. Review this sentence written by a student: "${input}".
+1. Is it grammatically correct? (Yes/No)
+2. Show the corrected/natural version.
+3. Explain mistakes clearly in Bengali so the student can learn.`;
+
+    const response = await callGemini(prompt);
+    container.innerHTML = `<div class="card">${formatText(response)}</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="card" style="color:red;">ত্রুটি: ${error.message}</div>`;
+  }
+}
+
 /* =========================================
-   4. SENTENCE CHECK & POINT SYSTEM
+   6. HELPER FUNCTIONS
 ========================================= */
-function checkAndAddSentence() {
-  const input = document.getElementById("sentenceInput");
-  const resultDiv = document.getElementById("feedbackResult");
-  const text = input.value.trim();
+function escapeHTML(text) {
+  return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+}
 
-  if (!text) {
-    alert("Please write or speak a sentence first.");
-    return;
-  }
-
-  // Simple Grammar Verification Rules
-  let words = text.split(" ");
-  let isCapitalized = /^[A-Z]/.test(text);
-  let hasValidLength = words.length >= 3;
-
-  if (!isCapitalized) {
-    resultDiv.innerHTML = `
-      <div class="feedback-error">
-        ❌ <strong>Correction Needed:</strong> ইংরেজি বাক্যের প্রথম অক্ষর সবসময় Capital Letter (বড় হাতের) দিয়ে শুরু করতে হয়। <br>
-        <strong>ঠিক রূপ:</strong> "${text.charAt(0).toUpperCase() + text.slice(1)}"
-      </div>
-    `;
-    return;
-  }
-
-  if (!hasValidLength) {
-    resultDiv.innerHTML = `
-      <div class="feedback-error">
-        ❌ <strong>Correction Needed:</strong> বাক্যটি খুব ছোট হয়ে গেছে। অন্তত ৩টি শব্দ দিয়ে একটি পূর্ণাঙ্গ বাক্য তৈরি করুন।
-      </div>
-    `;
-    return;
-  }
-
-  // Success Logic
-  points += 10;
-  sentenceCount += 1;
-
-  document.getElementById("totalPoints").textContent = points;
-  document.getElementById("statPoints").textContent = points;
-  document.getElementById("statSentences").textContent = sentenceCount;
-
-  if (points >= 50) {
-    document.getElementById("userLevel").textContent = "Advanced Practitioner 🌟";
-  } else if (points >= 20) {
-    document.getElementById("userLevel").textContent = "Intermediate Learner 🚀";
-  }
-
-  resultDiv.innerHTML = `
-    <div class="feedback-success">
-      ✅ <strong>Great Job!</strong> বাক্যটি সফলভাবে জমা হয়েছে। <br>
-      🎉 <strong>+10 Points Added!</strong>
-    </div>
-  `;
-
-  // Clear input for next sentence
-  input.value = "";
-   }
-       
+function formatText(text) {
+  return escapeHTML(text)
+    .replace(/\n/g, "<br>")
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+}
