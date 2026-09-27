@@ -3,86 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HSC Smart Prep & AI Assistant</title>
+  <title>Ranjita's Study Helper | Ranjita Creator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top Navigation Tabs -->
-  <div class="tab-container">
-    <button class="tab active" onclick="switchTab('mcqSection', this)">MCQ প্র্যাকটিস</button>
-    <button class="tab" onclick="switchTab('vocabSection', this)">ভোকাবুলারি</button>
-    <button class="tab" onclick="switchTab('fridaySection', this)">ফ্রাইডে এক্সাম</button>
-    <button class="tab" onclick="switchTab('aiChatSection', this)">AI অ্যাসিস্ট্যান্ট</button>
-    <button class="tab" onclick="switchTab('sentenceSection', this)">Sentence Checker</button>
-  </div>
+  <!-- নেভিগেশন বার (Ranjita Branding) -->
+  <nav class="navbar">
+    <div class="brand-info">
+      <h2>✨ Ranjita's Study Helper</h2>
+      <p class="sub-brand">Created by <span>Ranjita Creator</span></p>
+    </div>
+    <div class="nav-links">
+      <button onclick="showSection('exam-section')">🎯 কুইজ / পরীক্ষা</button>
+      <button onclick="showSection('vocab-section')">🔤 ডেইলি ভোকাবুলারি</button>
+      <button onclick="showSection('notes-section')">📝 নোট ও সূত্র</button>
+      <button onclick="showSection('tracker-section')">⏱️ রঞ্জিতার স্টাডি প্ল্যান</button>
+    </div>
+  </nav>
 
   <div class="container">
 
-    <!-- 1. MCQ Practice Section -->
-    <div id="mcqSection" class="section active">
-      <h2>অধ্যায় বেছে নিন:</h2>
-      <div class="control-group">
-        <select id="subjectSelect">
-          <option value="Economics 1st Paper">Economics 1st Paper</option>
-          <option value="Economics 2nd Paper">Economics 2nd Paper</option>
-          <option value="English 1st Paper">English 1st Paper</option>
-          <option value="Bangla 1st Paper">Bangla 1st Paper</option>
+    <!-- ১. কুইজ সেকশন -->
+    <section id="exam-section" class="card active-section">
+      <h2>🎯 অধ্যায়ভিত্তিক কুইজ ও প্রশ্ন ব্যাংক</h2>
+      <p class="section-subtitle">প্রতিবার পরীক্ষায় ভিন্ন ভিন্ন প্রশ্ন আসবে</p>
+      
+      <div class="controls">
+        <select id="subject-select" onchange="loadChapters()">
+          <option value="">বিষয় নির্বাচন করুন</option>
+          <option value="economics">অর্থনীতি ১ম পত্র</option>
+          <option value="geography">ভূগোল ১ম পত্র</option>
+          <option value="bangla">বাংলা ১ম পত্র</option>
+          <option value="islamic_history">ইসলামের ইতিহাস</option>
+          <option value="psychology">মনোবিজ্ঞান</option>
         </select>
 
-        <select id="chapterSelect">
-          <option value="১ম অধ্যায়">১ম অধ্যায়</option>
-          <option value="২য় অধ্যায়">২য় অধ্যায়</option>
-          <option value="৩য় অধ্যায়">৩য় অধ্যায়</option>
-          <option value="৪র্থ অধ্যায়">৪র্থ অধ্যায়</option>
+        <select id="chapter-select">
+          <option value="">অধ্যায় নির্বাচন করুন</option>
         </select>
+
+        <button onclick="startQuiz()">পরীক্ষা শুরু করুন</button>
       </div>
 
-      <button class="btn" onclick="generateMCQs()">✨ ২০টি নতুন MCQ প্রশ্ন তৈরি করুন</button>
-      <div id="mcqContainer" class="result-box"></div>
-    </div>
-
-    <!-- 2. Daily Vocabulary Section -->
-    <div id="vocabSection" class="section">
-      <h2>দৈনিক নতুন ভোকাবুলারি</h2>
-      <p>প্রতিবার বাটনে চাপ দিলে নতুন ১৫টি ইংরেজি শব্দ শিখতে পারবেন।</p>
-      <button class="btn" onclick="generateVocab()">✨ নতুন ১৫টি শব্দ লোড করুন</button>
-      <div id="vocabContainer" class="result-box"></div>
-    </div>
-
-    <!-- 3. Friday Practice Exam Section -->
-    <div id="fridaySection" class="section">
-      <h2>📝 সাপ্তাহিক/ফ্রাইডে এক্সাম</h2>
-      <p>সারা সপ্তাহে যা শিখলেন তা প্র্যাকটিস করার জন্য এই এক্সামে অংশ নিন।</p>
-      <button class="btn" onclick="generateFridayExam()">🚀 সাপ্তাহিক এক্সাম শুরু করুন</button>
-      <div id="examContainer" class="result-box"></div>
-    </div>
-
-    <!-- 4. AI English Tutor & General Knowledge Chat -->
-    <div id="aiChatSection" class="section">
-      <h2>🤖 AI টিউটর ও সাধারণ জ্ঞান</h2>
-      <p>ইংরেজি শেখার বিষয়ে প্রশ্ন করুন বা যেকোনো আউটসাইড জেনারেল নলেজ জিজ্ঞেস করুন।</p>
-      <div class="input-group">
-        <input type="text" id="aiChatInput" placeholder="এখানে প্রশ্ন লিখুন (যেমন: Explain noun in short / বাংলাদেশের দীর্ঘতম নদী কোনটি?)...">
-        <button class="btn" onclick="askAIAssistant()">প্রশ্ন পাঠান</button>
+      <div id="quiz-box" class="quiz-box hidden">
+        <h3 id="question-text">প্রশ্ন এখানে আসবে...</h3>
+        <div id="options-container" class="options-container"></div>
+        <button id="next-btn" onclick="nextQuestion()" class="hidden">পরবর্তী প্রশ্ন</button>
+        <div id="quiz-result" class="hidden"></div>
       </div>
-      <div id="aiChatResult" class="result-box"></div>
-    </div>
+    </section>
 
-    <!-- 5. Voice Input & Sentence Checker Section -->
-    <div id="sentenceSection" class="section">
-      <h2>🎙️ সেন্টেন্স চেক ও ভয়েস ইনপুট</h2>
-      <div class="input-group">
-        <input type="text" id="sentenceInput" placeholder="একটি ইংরেজি বাক্য লিখুন বা বলুন...">
-        <button id="micBtn" class="btn secondary" onclick="startVoiceInput()">🎙️ Voice</button>
+    <!-- ২. ভোকাবুলারি সেকশন -->
+    <section id="vocab-section" class="card hidden">
+      <h2>🔤 আজকের ১০টি ইংরেজি ভোকাবুলারি</h2>
+      <p class="section-subtitle">শব্দ, অর্থ, উদাহরণ বাক্য ও অনুবাদ</p>
+      <div id="vocab-list" class="vocab-grid"></div>
+    </section>
+
+    <!-- ৩. নোট ও সূত্র সেকশন -->
+    <section id="notes-section" class="card hidden">
+      <h2>📝 বিষয়ভিত্তিক সূত্র ও গুরুত্বপূর্ণ নোট</h2>
+      <div class="notes-grid">
+        <div class="note-card">
+          <h3>📊 অর্থনীতি সূত্র</h3>
+          <p><b>চাহিদার স্থিতিস্থাপকতা ($E_d$):</b></p>
+          <code>E_d = (চাহিদার পরিমাণের শতাংশ পরিবর্তন) ÷ (দামের শতাংশ পরিবর্তন)</code>
+        </div>
+        <div class="note-card">
+          <h3>🧠 মনোবিজ্ঞান নোট</h3>
+          <p><b>স্মৃতির ধাপসমূহ:</b> ১. শিখন (Learning) ➔ ২. সংরক্ষণ (Retention) ➔ ৩. পুনরুদ্রেক (Recall) ➔ ৪. প্রত্যভিজ্ঞা (Recognition)।</p>
+        </div>
       </div>
-      <button class="btn" onclick="checkSentence()">ভুল সংশোধন ও ব্যাকরণ চেক করুন</button>
-      <div id="sentenceResult" class="result-box"></div>
-    </div>
+    </section>
+
+    <!-- ৪. স্টাডি ট্র্যাকার ও রঞ্জিতার স্টাডি প্ল্যান -->
+    <section id="tracker-section" class="card hidden">
+      <h2>⏱️ রঞ্জিতার স্টাডি প্ল্যান ও কাউন্টডাউন</h2>
+      <p class="section-subtitle">ডেইলি পড়ার সময় ও টার্গেট ট্র্যাক করুন</p>
+      
+      <div class="tracker-grid">
+        <div class="tracker-box">
+          <h3>⏳ এক্সাম কাউন্টডাউন</h3>
+          <div id="countdown" class="timer-display">পরীক্ষার আর বাকি: -- দিন</div>
+        </div>
+        <div class="tracker-box">
+          <h3>⏱️ ডেইলি স্টাডি টাইমার</h3>
+          <div id="study-timer" class="timer-display">00:00:00</div>
+          <button onclick="startTimer()">পড়া শুরু</button>
+          <button onclick="stopTimer()">পজ</button>
+          <button onclick="resetTimer()">রিসেট</button>
+        </div>
+      </div>
+    </section>
 
   </div>
 
+  <footer class="footer">
+    <p>Powered by <b>Ranjita Creator</b> | All Rights Reserved © 2026</p>
+  </footer>
+
   <script src="script.js"></script>
 </body>
-          </html>
-          
+  </html>
+  
