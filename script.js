@@ -6,7 +6,7 @@ const KEY_PART2 = "upsIzHocg-VU4qTlcGkLoQ";
 const GEMINI_API_KEY = KEY_PART1 + KEY_PART2;
 
 async function callGemini(prompt) {
-  // Using Gemini 2.5 Flash Model
+  // Using Gemini 1.5 Flash Model
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   const response = await fetch(url, {
