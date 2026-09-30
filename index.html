@@ -1,109 +1,20 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ranjita's Study Helper | Ranjita Creator</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <!-- নেভিগেশন বার (Ranjita Branding) -->
-  <nav class="navbar">
-    <div class="brand-info">
-      <h2>✨ Ranjita's Study Helper</h2>
-      <p class="sub-brand">Created by <span>Ranjita Creator</span></p>
-    </div>
-    <div class="nav-links">
-      <button onclick="showSection('exam-section')">🎯 কুইজ / পরীক্ষা</button>
-      <button onclick="showSection('vocab-section')">🔤 ডেইলি ভোকাবুলারি</button>
-      <button onclick="showSection('notes-section')">📝 নোট ও সূত্র</button>
-      <button onclick="showSection('tracker-section')">⏱️ রঞ্জিতার স্টাডি প্ল্যান</button>
-    </div>
-  </nav>
-
-  <div class="container">
-
-    <!-- ১. কুইজ সেকশন -->
-    <section id="exam-section" class="card active-section">
-      <h2>🎯 অধ্যায়ভিত্তিক কুইজ ও প্রশ্ন ব্যাংক</h2>
-      <p class="section-subtitle">প্রতিবার পরীক্ষায় ভিন্ন ভিন্ন প্রশ্ন আসবে</p>
-      
-      <div class="controls">
-        <select id="subject-select" onchange="loadChapters()">
-          <option value="">বিষয় নির্বাচন করুন</option>
-          <option value="economics">অর্থনীতি ১ম পত্র</option>
-          <option value="geography">ভূগোল ১ম পত্র</option>
-          <option value="bangla">বাংলা ১ম পত্র</option>
-          <option value="islamic_history">ইসলামের ইতিহাস</option>
-          <option value="psychology">মনোবিজ্ঞান</option>
-        </select>
-
-        <select id="chapter-select">
-          <option value="">অধ্যায় নির্বাচন করুন</option>
-        </select>
-
-        <button onclick="startQuiz()">পরীক্ষা শুরু করুন</button>
-      </div>
-
-      <div id="quiz-box" class="quiz-box hidden">
-        <h3 id="question-text">প্রশ্ন এখানে আসবে...</h3>
-        <div id="options-container" class="options-container"></div>
-        <button id="next-btn" onclick="nextQuestion()" class="hidden">পরবর্তী প্রশ্ন</button>
-        <div id="quiz-result" class="hidden"></div>
-      </div>
-    </section>
-
-    <!-- ২. ভোকাবুলারি সেকশন -->
-    <section id="vocab-section" class="card hidden">
-      <h2>🔤 আজকের ১০টি ইংরেজি ভোকাবুলারি</h2>
-      <p class="section-subtitle">শব্দ, অর্থ, উদাহরণ বাক্য ও অনুবাদ</p>
-      <div id="vocab-list" class="vocab-grid"></div>
-    </section>
-
-    <!-- ৩. নোট ও সূত্র সেকশন -->
-    <section id="notes-section" class="card hidden">
-      <h2>📝 বিষয়ভিত্তিক সূত্র ও গুরুত্বপূর্ণ নোট</h2>
-      <div class="notes-grid">
-        <div class="note-card">
-          <h3>📊 অর্থনীতি সূত্র</h3>
-          <p><b>চাহিদার স্থিতিস্থাপকতা ($E_d$):</b></p>
-          <code>E_d = (চাহিদার পরিমাণের শতাংশ পরিবর্তন) ÷ (দামের শতাংশ পরিবর্তন)</code>
-        </div>
-        <div class="note-card">
-          <h3>🧠 মনোবিজ্ঞান নোট</h3>
-          <p><b>স্মৃতির ধাপসমূহ:</b> ১. শিখন (Learning) ➔ ২. সংরক্ষণ (Retention) ➔ ৩. পুনরুদ্রেক (Recall) ➔ ৪. প্রত্যভিজ্ঞা (Recognition)।</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ৪. স্টাডি ট্র্যাকার ও রঞ্জিতার স্টাডি প্ল্যান -->
-    <section id="tracker-section" class="card hidden">
-      <h2>⏱️ রঞ্জিতার স্টাডি প্ল্যান ও কাউন্টডাউন</h2>
-      <p class="section-subtitle">ডেইলি পড়ার সময় ও টার্গেট ট্র্যাক করুন</p>
-      
-      <div class="tracker-grid">
-        <div class="tracker-box">
-          <h3>⏳ এক্সাম কাউন্টডাউন</h3>
-          <div id="countdown" class="timer-display">পরীক্ষার আর বাকি: -- দিন</div>
-        </div>
-        <div class="tracker-box">
-          <h3>⏱️ ডেইলি স্টাডি টাইমার</h3>
-          <div id="study-timer" class="timer-display">00:00:00</div>
-          <button onclick="startTimer()">পড়া শুরু</button>
-          <button onclick="stopTimer()">পজ</button>
-          <button onclick="resetTimer()">রিসেট</button>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <footer class="footer">
-    <p>Powered by <b>Ranjita Creator</b> | All Rights Reserved © 2026</p>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
-  </html>
+<!-- ২. ভোকাবুলারি ও গ্রামার চেকার সেকশন -->
+<section id="vocab-section" class="card hidden">
+  <h2>🔤 ডেইলি ৫টি ভোকাবুলারি ও সেন্টেন্স মেকিং প্র্যাকটিস</h2>
+  <p class="section-subtitle">প্রতিদিন নতুন শব্দ শিখুন এবং বাক্য বানিয়ে ভুল সংশোধন করে নিন</p>
   
+  <div id="vocab-list" class="vocab-grid"></div>
+
+  <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+
+  <div class="grammar-practice-box">
+    <h3>✍️ Sentence Making Practice (ভুল সংশোধন সেকশন)</h3>
+    <p style="font-size: 14px; color: #555; margin-bottom: 10px;">আজকের যেকোনো শব্দ দিয়ে নিচে একটি ইংরেজি বাক্য লিখুন:</p>
+    
+    <textarea id="user-sentence" rows="3" placeholder="Type your sentence here... (e.g., She are a good student)"></textarea>
+    <br>
+    <button onclick="checkGrammar()" id="check-btn">Check Sentence (ভুল যাচাই করুন)</button>
+
+    <div id="grammar-result" class="grammar-result-box hidden"></div>
+  </div>
+</section>
