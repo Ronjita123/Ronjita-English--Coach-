@@ -1,20 +1,61 @@
-<!-- ২. ভোকাবুলারি ও গ্রামার চেকার সেকশন -->
-<section id="vocab-section" class="card hidden">
-  <h2>🔤 ডেইলি ৫টি ভোকাবুলারি ও সেন্টেন্স মেকিং প্র্যাকটিস</h2>
-  <p class="section-subtitle">প্রতিদিন নতুন শব্দ শিখুন এবং বাক্য বানিয়ে ভুল সংশোধন করে নিন</p>
-  
-  <div id="vocab-list" class="vocab-grid"></div>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Learning Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
+  <header>
+    <h1>🎯 Daily English & AI Voice Partner</h1>
+    <p>প্রতিদিন ৫টি শব্দ শিখুন, বাক্য তৈরি করুন এবং AI-এর সাথে ইংরেজিতে কথা বলুন</p>
+  </header>
 
-  <div class="grammar-practice-box">
-    <h3>✍️ Sentence Making Practice (ভুল সংশোধন সেকশন)</h3>
-    <p style="font-size: 14px; color: #555; margin-bottom: 10px;">আজকের যেকোনো শব্দ দিয়ে নিচে একটি ইংরেজি বাক্য লিখুন:</p>
+  <main class="container">
     
-    <textarea id="user-sentence" rows="3" placeholder="Type your sentence here... (e.g., She are a good student)"></textarea>
-    <br>
-    <button onclick="checkGrammar()" id="check-btn">Check Sentence (ভুল যাচাই করুন)</button>
+    <!-- ১. ডেইলি ৫টি ভোকাবুলারি ও তৈরি সেন্টেন্স সেকশন -->
+    <section class="card">
+      <h2>📚 আজকের ৫টি ভোকাবুলারি ও উদাহরণ</h2>
+      <div id="vocab-container" class="vocab-grid"></div>
+    </section>
 
-    <div id="grammar-result" class="grammar-result-box hidden"></div>
-  </div>
-</section>
+    <!-- ২. নিজের সেন্টেন্স তৈরি, ভুল সংশোধন ও অনুবাদ সেকশন -->
+    <section class="card">
+      <h2>✍️ Make Your Own Sentence (সেন্টেন্স প্র্যাকটিস)</h2>
+      <p>আজকের যেকোনো শব্দ দিয়ে নিচে আপনার নিজের তৈরি বাক্যটি লিখুন:</p>
+      
+      <div class="input-group">
+        <textarea id="user-sentence" rows="3" placeholder="Type your sentence here... (e.g. I am go to school)"></textarea>
+        <button id="check-btn" onclick="processSentence()">Check & Translate (ভুল ও অর্থ দেখুন)</button>
+      </div>
+
+      <!-- ফলাফল দেখানোর জায়গা -->
+      <div id="result-box" class="result-box hidden">
+        <div id="grammar-feedback"></div>
+        <div id="translation-feedback"></div>
+      </div>
+    </section>
+
+    <!-- ৩. AI Voice Companion (ইংরেজিতে কথা বলার ভয়েস পার্টনার) -->
+    <section class="card ai-voice-card">
+      <h2>🎙️ AI English Voice Partner (স্পোকেন প্র্যাকটিস)</h2>
+      <p>মাইক বাটনে চাপ দিয়ে ইংরেজিতে কথা বলুন। AI আপনাকে উত্তর দেবে এবং আপনাকে ফিরিয়ে নতুন প্রশ্ন করবে!</p>
+      
+      <div class="voice-controls">
+        <button id="mic-btn" onclick="startVoiceChat()">🎤 কথা বলা শুরু করুন</button>
+        <p id="voice-status" class="status-text">বাটনে ক্লিক করে বলা শুরু করুন...</p>
+      </div>
+
+      <div id="chat-history" class="chat-box">
+        <div class="bot-msg"><b>AI:</b> Hello Ranjita! I am your English partner. How is your day going? What did you study today?</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+  </html>
+  
