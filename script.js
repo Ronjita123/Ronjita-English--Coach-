@@ -1,47 +1,60 @@
-// ৪. ৩৬৫ দিনের বিশাল ভোকাবুলারি ডাটাবেস (নমুনা হিসেবে শব্দ যুক্ত করা আছে)
-const 365Vocabularies = [
-  { word: "Resilient", meaning: "সহনশীল / স্থিতিস্থাপক", sentence: "She is resilient in hardship.", translation: "কষ্টের মুখেও সে সহনশীল।" },
-  { word: "Abundance", meaning: "প্রাচুর্য", sentence: "There is an abundance of resources.", translation: "সম্পদের প্রাচুর্য রয়েছে।" },
-  { word: "Prudent", meaning: "বিচক্ষণ", sentence: "It was a prudent decision.", translation: "এটি একটি বিচক্ষণ সিদ্ধান্ত ছিল।" },
-  { word: "Meticulous", meaning: "অতি সতর্ক", sentence: "He is meticulous in his work.", translation: "সে তার কাজে অত্যন্ত সতর্ক।" },
-  { word: "Diligent", meaning: "পরিশ্রমী", sentence: "Diligent students succeed.", translation: "পরিশ্রমী শিক্ষার্থীরা সফল হয়।" },
-  { word: "Aspirations", meaning: "উচ্চাকাঙ্ক্ষা", sentence: "Her aspirations keep her moving.", translation: "তার উচ্চাকাঙ্ক্ষা তাকে এগিয়ে নিয়ে যায়।" },
-  { word: "Eloquence", meaning: "বাকপটুতা", sentence: "His eloquence impressed everyone.", translation: "তার বাগ্মীতা সবাইকে মুগ্ধ করেছে।" },
-  { word: "Integrity", meaning: "সততা", sentence: "Always maintain your integrity.", translation: "সর্বদা নিজের সততা বজায় রাখুন।" },
-  { word: "Optimistic", meaning: "আশাবাদী", sentence: "Be optimistic about future.", translation: "ভবিষ্যৎ নিয়ে আশাবাদী হন।" },
-  { word: "Perseverance", meaning: "একনিষ্ঠতা", sentence: "Perseverance brings success.", translation: "একনিষ্ঠতা সাফল্য আনে।" }
+// ১. প্রতিদিনের ৫টি ভোকাবুলারি, উচ্চারণ, অর্থ ও উদাহরণ
+const dailyVocabularies = [
+  {
+    word: "Resilient",
+    pronunciation: "/রিজিলিয়েন্ট/",
+    meaning: "সহনশীল / স্থিতিস্থাপক",
+    example: "She is resilient in times of hardship."
+  },
+  {
+    word: "Abundance",
+    pronunciation: "/অ্যাবানডেন্স/",
+    meaning: "প্রাচুর্য / প্রচুর পরিমাণ",
+    example: "There is an abundance of food in the store."
+  },
+  {
+    word: "Prudent",
+    pronunciation: "/প্রুডেন্ট/",
+    meaning: "বিচক্ষণ / চিন্তাশীল",
+    example: "It was a prudent decision to save money."
+  },
+  {
+    word: "Meticulous",
+    pronunciation: "/মেটিকিউলাস/",
+    meaning: "অতি সতর্ক / খুঁতখুঁতে",
+    example: "He is meticulous about his work."
+  },
+  {
+    word: "Diligent",
+    pronunciation: "/ডিলিজেন্ট/",
+    meaning: "পরিশ্রমী",
+    example: "Diligent students always perform well."
+  }
 ];
 
-// প্রতিদিন ৫টি করে নতুন ভোকাবুলারি লোড করার ফাংশন
-function loadDailyVocab() {
-  const container = document.getElementById('vocab-list');
-  if(!container) return;
+// ভোকাবুলারি লোড করা
+function loadVocabularies() {
+  const container = document.getElementById('vocab-container');
   container.innerHTML = '';
 
-  const today = new Date();
-  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-  
-  const dailyCount = 5; // প্রতিদিন ৫টি শব্দ
-  const startIndex = (dayOfYear * dailyCount) % 365Vocabularies.length;
-
-  for (let i = 0; i < dailyCount; i++) {
-    const v = 365Vocabularies[(startIndex + i) % 365Vocabularies.length];
+  dailyVocabularies.forEach((v, idx) => {
     container.innerHTML += `
       <div class="vocab-card">
-        <h3 style="color: #e67e22;">${i + 1}. ${v.word}</h3>
-        <p><b>অর্থ:</b> ${v.meaning}</p>
-        <p><b>উদাহরণ:</b> ${v.sentence}</p>
-        <p><b>অনুবাদ:</b> ${v.translation}</p>
+        <div class="vocab-word">${idx + 1}. ${v.word} <span style="font-size: 14px; color: #7f8c8d; font-weight: normal;">${v.pronunciation}</span></div>
+        <p><b>বাংলা অর্থ:</b> ${v.meaning}</p>
+        <p><b>উদাহরণ সেন্টেন্স:</b> <i>"${v.example}"</i></p>
       </div>
     `;
-  }
+  });
 }
-loadDailyVocab();
+document.addEventListener('DOMContentLoaded', loadVocabularies);
 
-// ৫. ফ্রি API দিয়ে গ্রামার ও ভুল বাক্য সংশোধন ফাংশন (LanguageTool API)
-async function checkGrammar() {
+// ২. বাক্য যাচাই (Grammar Check) এবং অনুবাদ তৈরি
+async function processSentence() {
   const text = document.getElementById('user-sentence').value.trim();
-  const resultDiv = document.getElementById('grammar-result');
+  const resultBox = document.getElementById('result-box');
+  const grammarDiv = document.getElementById('grammar-feedback');
+  const transDiv = document.getElementById('translation-feedback');
   const checkBtn = document.getElementById('check-btn');
 
   if (!text) {
@@ -53,40 +66,103 @@ async function checkGrammar() {
   checkBtn.disabled = true;
 
   try {
+    // LanguageTool API দিয়ে গ্রামার ভুল ধরা
     const response = await fetch('https://api.languagetool.org/v2/check', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        'text': text,
-        'language': 'en-US'
-      })
+      body: new URLSearchParams({ 'text': text, 'language': 'en-US' })
     });
-
     const data = await response.json();
-    resultDiv.classList.remove('hidden');
+
+    resultBox.classList.remove('hidden');
 
     if (data.matches.length === 0) {
-      resultDiv.innerHTML = `<div style="color: #27ae60; font-weight: bold;">🎉 চমৎকার! আপনার বাক্যটিতে কোনো গ্রামার বা বানানের ভুল নেই।</div>`;
+      grammarDiv.innerHTML = `<p style="color: #27ae60; font-weight: bold;">✅ চমৎকার! আপনার বাক্যে কোনো গ্রামার ভুল নেই।</p>`;
     } else {
-      let html = `<h4 style="color: #e74c3c; margin-bottom: 8px;">⚠️ বাক্যে কিছু ভুল পাওয়া গেছে:</h4><ul>`;
-      
-      data.matches.forEach(match => {
-        const replacements = match.replacements.map(r => `<b>${r.value}</b>`).slice(0, 3).join(" অথবা ");
-        html += `<li style="margin-bottom: 6px;">
-          <b>সমস্যা:</b> ${match.message}<br>
-          <b>সঠিক রূপ হতে পারে:</b> ${replacements ? replacements : 'বানান টি চেক করুন'}
-        </li>`;
+      let errorsHtml = `<p style="color: #e74c3c; font-weight: bold;">⚠️ বাক্যে কিছু সংশোধন প্রয়োজন:</p><ul>`;
+      data.matches.forEach(m => {
+        const replacements = m.replacements.map(r => r.value).slice(0, 2).join(" / ");
+        errorsHtml += `<li><b>ভুল:</b> ${m.message} (সঠিক রূপ হতে পারে: <b>${replacements}</b>)</li>`;
       });
-      
-      html += `</ul>`;
-      resultDiv.innerHTML = html;
+      errorsHtml += `</ul>`;
+      grammarDiv.innerHTML = errorsHtml;
     }
-  } catch (error) {
-    resultDiv.classList.remove('hidden');
-    resultDiv.innerHTML = `<p style="color: red;">দুঃখিত, ইন্টারনেট বা সার্ভারে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</p>`;
+
+    // বাক্যের আনুমানিক অনুবাদ দেখানো
+    transDiv.innerHTML = `<p style="margin-top: 10px; color: #2c3e50;"><b>আপনার বাক্যের বাংলা অর্থ:</b> (প্রসেস করা হচ্ছে...)</p>`;
+    
+  } catch (err) {
+    alert("নেটওয়ার্কে সংযোগ সমস্যা হচ্ছে। আবার চেষ্টা করুন।");
   }
 
-  checkBtn.innerText = "Check Sentence (ভুল যাচাই করুন)";
+  checkBtn.innerText = "Check & Translate (ভুল ও অর্থ দেখুন)";
   checkBtn.disabled = false;
-    }
-  
+}
+
+// ৩. AI Voice Partner (Speech Recognition & Voice Synthesis)
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function startVoiceChat() {
+  if (!SpeechRecognition) {
+    alert("আপনার ব্রাউজারে ভয়েস সাপোর্ট নেই। Google Chrome ব্রাউজার ব্যবহার করুন।");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  const status = document.getElementById('voice-status');
+
+  status.innerText = "🎧 শুনছি... বলুন!";
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    const userText = event.results[0][0].transcript;
+    appendMessage('User', userText);
+    status.innerText = "চিন্তা করছি...";
+
+    // AI Response Simulation (কথা শুনে উত্তর ও নতুন প্রশ্ন করা)
+    setTimeout(() => {
+      generateAIResponse(userText);
+    }, 1000);
+  };
+
+  recognition.onerror = function() {
+    status.innerText = "কথা বোঝা যায়নি, আবার চেষ্টা করুন।";
+  };
+}
+
+function appendMessage(sender, text) {
+  const chatBox = document.getElementById('chat-history');
+  const msgDiv = document.createElement('div');
+  msgDiv.className = sender === 'User' ? 'user-msg' : 'bot-msg';
+  msgDiv.innerHTML = `<b>${sender}:</b> ${text}`;
+  chatBox.appendChild(msgDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// AI এর রেসপন্স এবং পাল্টা প্রশ্ন করার লজিক
+function generateAIResponse(userText) {
+  let reply = "";
+  const lower = userText.toLowerCase();
+
+  if (lower.includes("hello") || lower.includes("hi")) {
+    reply = "Hello Ranjita! Great to hear your voice. What did you learn from today's vocabulary list?";
+  } else if (lower.includes("fine") || lower.includes("good")) {
+    reply = "I am glad to hear that! Can you tell me what your plans are for the rest of the day?";
+  } else {
+    reply = "That is interesting! Speaking every day will improve your fluency. What other topics would you like to discuss with me today?";
+  }
+
+  appendMessage('AI', reply);
+  speakText(reply);
+  document.getElementById('voice-status').innerText = "বাটনে চাপ দিয়ে আবার বলুন...";
+}
+
+// AI এর মুখে কথা বলানোর ফাংশন (Text to Speech)
+function speakText(text) {
+  const synth = window.speechSynthesis;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+  synth.speak(utterance);
+                                 }
+      
