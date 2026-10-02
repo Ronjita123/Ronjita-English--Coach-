@@ -2,11 +2,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background-color: #f4f7f6;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
   color: #333;
 }
 
@@ -17,116 +17,181 @@ header {
   padding: 30px 15px;
 }
 
+header h1 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
 .container {
-  max-width: 800px;
-  margin: 20px auto;
+  max-width: 850px;
+  margin: 25px auto;
   padding: 0 15px;
 }
 
 .card {
   background: white;
-  padding: 20px;
+  padding: 22px;
   margin-bottom: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .card h2 {
   color: #2c3e50;
-  margin-bottom: 12px;
-  font-size: 20px;
+  margin-bottom: 18px;
 }
 
+.info {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+
+/* VOCABULARY */
+
 .vocab-card {
-  background: #f8f9fa;
-  border-left: 4px solid #4a90e2;
-  padding: 12px;
+  background: #f8fafc;
+  border-left: 5px solid #4a90e2;
+  padding: 15px;
   margin-bottom: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .vocab-word {
-  font-size: 18px;
-  color: #d35400;
+  font-size: 21px;
   font-weight: bold;
+  color: #d35400;
+  margin-bottom: 8px;
+}
+
+.pronunciation {
+  font-size: 14px;
+  color: #777;
+  font-weight: normal;
+}
+
+.example {
+  margin-top: 8px;
+  color: #444;
+}
+
+
+/* SENTENCE */
+
+.practice-card {
+  border: 1px solid #e4e7eb;
+  padding: 15px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+}
+
+.practice-sentence {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 12px;
 }
 
 textarea {
   width: 100%;
+  min-height: 80px;
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 15px;
-  margin-top: 8px;
+  resize: vertical;
+  font-size: 16px;
 }
 
 button {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 10px;
   width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #27ae60;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 button:hover {
-  background-color: #219150;
+  opacity: 0.9;
 }
 
-.result-box {
-  margin-top: 15px;
-  padding: 15px;
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result {
+  margin-top: 12px;
+  padding: 14px;
+  background: #f4f8ff;
   border-radius: 8px;
-  background: #f1f9f5;
-  border: 1px solid #c8e6c9;
+  line-height: 1.7;
 }
 
-.hidden {
-  display: none;
-}
 
-/* Voice Section */
-.ai-voice-card {
+/* VOICE */
+
+.voice-card {
   border: 2px solid #4a90e2;
 }
 
 #mic-btn {
-  background-color: #e74c3c;
+  background: #e74c3c;
 }
 
 #mic-btn:hover {
-  background-color: #c0392b;
+  background: #c0392b;
+}
+
+.status {
+  text-align: center;
+  color: #777;
+  margin-top: 8px;
 }
 
 .chat-box {
-  max-height: 250px;
+  margin-top: 18px;
+  padding: 15px;
+  height: 320px;
   overflow-y: auto;
-  background: #f9f9f9;
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 15px;
-  border: 1px solid #eee;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #ddd;
 }
 
 .user-msg {
+  background: #e8f1ff;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
   text-align: right;
-  color: #2980b9;
-  margin: 6px 0;
+  color: #1769aa;
 }
 
 .bot-msg {
-  text-align: left;
-  color: #27ae60;
-  margin: 6px 0;
+  background: #eaf8ef;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  color: #218c4b;
 }
 
-.status-text {
-  font-size: 13px;
-  color: #7f8c8d;
-  margin-top: 6px;
-  text-align: center;
+@media (max-width: 600px) {
+
+  header h1 {
+    font-size: 23px;
   }
+
+  .card {
+    padding: 17px;
+  }
+
+  .vocab-word {
+    font-size: 19px;
+  }
+
+}
