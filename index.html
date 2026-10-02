@@ -3,59 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>English Learning Hub</title>
+  <title>Ronjita English Learning</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <header>
-    <h1>🎯 Daily English & AI Voice Partner</h1>
-    <p>প্রতিদিন ৫টি শব্দ শিখুন, বাক্য তৈরি করুন এবং AI-এর সাথে ইংরেজিতে কথা বলুন</p>
-  </header>
+<header>
+  <h1>🌸 Ronjita's English Learning</h1>
+  <p>Vocabulary • Sentence • Speaking</p>
+</header>
 
-  <main class="container">
-    
-    <!-- ১. ডেইলি ৫টি ভোকাবুলারি ও তৈরি সেন্টেন্স সেকশন -->
-    <section class="card">
-      <h2>📚 আজকের ৫টি ভোকাবুলারি ও উদাহরণ</h2>
-      <div id="vocab-container" class="vocab-grid"></div>
-    </section>
+<main class="container">
 
-    <!-- ২. নিজের সেন্টেন্স তৈরি, ভুল সংশোধন ও অনুবাদ সেকশন -->
-    <section class="card">
-      <h2>✍️ Make Your Own Sentence (সেন্টেন্স প্র্যাকটিস)</h2>
-      <p>আজকের যেকোনো শব্দ দিয়ে নিচে আপনার নিজের তৈরি বাক্যটি লিখুন:</p>
-      
-      <div class="input-group">
-        <textarea id="user-sentence" rows="3" placeholder="Type your sentence here... (e.g. I am go to school)"></textarea>
-        <button id="check-btn" onclick="processSentence()">Check & Translate (ভুল ও অর্থ দেখুন)</button>
+  <!-- VOCABULARY -->
+  <section class="card">
+    <h2>📚 আজকের ৫টি Vocabulary</h2>
+    <div id="vocab-container"></div>
+  </section>
+
+
+  <!-- SENTENCE PRACTICE -->
+  <section class="card">
+    <h2>✍️ Sentence Practice</h2>
+
+    <p class="info">
+      আজকের vocabulary ব্যবহার করে নিচের ৫টি sentence দেখুন।
+      তারপর প্রতিটির নিচে নিজের sentence লিখুন।
+    </p>
+
+    <div id="sentence-container"></div>
+
+  </section>
+
+
+  <!-- SPEAKING -->
+  <section class="card voice-card">
+
+    <h2>🎙️ Speak English with AI</h2>
+
+    <p class="info">
+      Microphone চাপুন এবং ইংরেজিতে কথা বলুন।
+      AI আপনার উত্তর দেবে এবং তারপর নিজেই আপনাকে নতুন প্রশ্ন করবে।
+    </p>
+
+    <button id="mic-btn" onclick="startVoiceChat()">
+      🎤 কথা বলা শুরু করুন
+    </button>
+
+    <p id="voice-status" class="status">
+      Microphone চাপুন...
+    </p>
+
+    <div id="chat-history" class="chat-box">
+
+      <div class="bot-msg">
+        <b>AI:</b> Hello Ronjita! How are you today?
       </div>
 
-      <!-- ফলাফল দেখানোর জায়গা -->
-      <div id="result-box" class="result-box hidden">
-        <div id="grammar-feedback"></div>
-        <div id="translation-feedback"></div>
-      </div>
-    </section>
+    </div>
 
-    <!-- ৩. AI Voice Companion (ইংরেজিতে কথা বলার ভয়েস পার্টনার) -->
-    <section class="card ai-voice-card">
-      <h2>🎙️ AI English Voice Partner (স্পোকেন প্র্যাকটিস)</h2>
-      <p>মাইক বাটনে চাপ দিয়ে ইংরেজিতে কথা বলুন। AI আপনাকে উত্তর দেবে এবং আপনাকে ফিরিয়ে নতুন প্রশ্ন করবে!</p>
-      
-      <div class="voice-controls">
-        <button id="mic-btn" onclick="startVoiceChat()">🎤 কথা বলা শুরু করুন</button>
-        <p id="voice-status" class="status-text">বাটনে ক্লিক করে বলা শুরু করুন...</p>
-      </div>
+  </section>
 
-      <div id="chat-history" class="chat-box">
-        <div class="bot-msg"><b>AI:</b> Hello Ranjita! I am your English partner. How is your day going? What did you study today?</div>
-      </div>
-    </section>
+</main>
 
-  </main>
+<script src="script.js"></script>
 
-  <script src="script.js"></script>
 </body>
-  </html>
-  
+</html>
